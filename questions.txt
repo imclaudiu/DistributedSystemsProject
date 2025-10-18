@@ -1,0 +1,2 @@
+de ce trebuie sa am patch pt partial? trebuie sa am si put si patch, separat?
+Daca da, care ar mai fi rostul update-ului prin put, din moment ce il pot face cu patch?
