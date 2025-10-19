@@ -53,7 +53,7 @@ public class AuthenticationService {
         return BCrypt.checkpw(loginDTO.getPassword(), authentication.getPassword());
     }
 
-    public ResponseEntity<Authentication> patchDevice(@PathVariable UUID id, @RequestBody AuthenticationDetailsDTO authenticationDetailsDTO){
+    public Authentication patchDevice(UUID id, AuthenticationDetailsDTO authenticationDetailsDTO){
         Authentication authentication = authenticationRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Authentication details not found"));
 
         if(authenticationDetailsDTO.getUsername() != null)
@@ -68,7 +68,7 @@ public class AuthenticationService {
         if(authenticationDetailsDTO.getRole() != null)
             authentication.setRole(authenticationDetailsDTO.getRole());
 
-        return ResponseEntity.ok(authenticationRepository.save(authentication));
+        return authenticationRepository.save(authentication);
     }
 
     public void delete(UUID id){

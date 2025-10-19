@@ -51,7 +51,7 @@ public class DeviceService {
         deviceRepository.deleteById(id);
     }
 
-    public ResponseEntity<Device> patchDevice(@PathVariable UUID id, @RequestBody DeviceDetailsDTO deviceDetailsDTO){
+    public ResponseEntity<Device> patchDevice(UUID id, DeviceDetailsDTO deviceDetailsDTO){
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Device not found"));
 
         if(deviceDetailsDTO.getName() != null)
