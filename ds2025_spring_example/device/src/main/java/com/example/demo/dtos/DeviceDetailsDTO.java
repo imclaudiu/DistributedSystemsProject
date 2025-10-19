@@ -9,7 +9,6 @@ public class DeviceDetailsDTO {
 
     @NotBlank(message = "Device name required")
     private String name;
-    @NotBlank(message = "maxConsumption required")
     private Integer maxConsumption;
 
     public DeviceDetailsDTO() {
