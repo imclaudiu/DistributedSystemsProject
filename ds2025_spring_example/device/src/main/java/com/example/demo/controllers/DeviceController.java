@@ -28,7 +28,7 @@ public class DeviceController {
         this.deviceService = deviceService;
     }
 
-    @PostMapping("/addDevice")
+    @PostMapping("/add")
     public ResponseEntity<Void> create(@Valid @RequestBody DeviceDetailsDTO deviceDetailsDTO)
     {
         Device device = deviceService.insert(deviceDetailsDTO);
@@ -36,23 +36,23 @@ public class DeviceController {
         return ResponseEntity.created(location).build();
     }
 
-    @GetMapping("/getAllDevices")
+    @GetMapping("/getAll")
     public ResponseEntity<List<DeviceDTO>> getAllDevices(){
         return ResponseEntity.ok(deviceService.getAllDevices());
     }
 
-    @GetMapping("/getDevice/{id}")
+    @GetMapping("/get/{id}")
     public DeviceDetailsDTO getDevice(@PathVariable UUID id){
         return deviceService.getDevice(id);
     }
 
-    @DeleteMapping("/deleteDevice/{id}")
+    @DeleteMapping("/delete/{id}")
     public void deleteDevice(@PathVariable UUID id)
     {
         deviceService.deleteDevice(id);
     }
 
-    @PatchMapping("/updateDevice/{id}")
+    @PatchMapping("/update/{id}")
     public ResponseEntity<Device> updateDevice(@PathVariable UUID id, @RequestBody DeviceDetailsDTO deviceDetailsDTO){
         return deviceService.patchDevice(id, deviceDetailsDTO);
     }

@@ -25,12 +25,12 @@ public class PersonController {
         this.personService = personService;
     }
 
-    @GetMapping
+    @GetMapping("/getAll")
     public ResponseEntity<List<PersonDetailsDTO>> getPeople() {
         return ResponseEntity.ok(personService.findPersons());
     }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<Void> create(@Valid @RequestBody PersonDetailsDTO person) {
         UUID id = personService.insert(person);
         URI location = ServletUriComponentsBuilder
@@ -41,17 +41,17 @@ public class PersonController {
         return ResponseEntity.created(location).build(); // 201 + Location header
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("get/{id}")
     public ResponseEntity<PersonDetailsDTO> getPerson(@PathVariable UUID id) {
         return ResponseEntity.ok(personService.findPersonById(id));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public void delete(@PathVariable UUID id){
         personService.delete(id);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("update/{id}")
     public Person update(@PathVariable UUID id, @RequestBody PersonDetailsDTO person){
         return personService.updatePerson(person);
     }
