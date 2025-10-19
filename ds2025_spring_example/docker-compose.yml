@@ -1,40 +1,122 @@
-version: '3'
+# version: "3.9"
 
 services:
-   db:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    command:
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080" # optional dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - demo-net
+
+  # ---------------- USER ----------------
+  user_db:
     image: postgres
-    container_name: db
+    container_name: user_db
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: user_db
-    ports:
-      - "5433:5432"
     volumes:
-      - my-db:/var/lib/postgresql/data
+      - user_db:/var/lib/postgresql/data
     networks:
-      demo-net:
+      - demo-net
 
-   spring-demo:
+  user:
     build:
       context: ./user
-      dockerfile: ./Dockerfile
-    container_name: spring-demo
-    ports:
-      - "8081:8080"
+      dockerfile: Dockerfile
+    container_name: user
     environment:
-      - DB_IP=db
+      - DB_IP=user_db
       - DB_PORT=5432
       - DB_DBNAME=user_db
       - DB_USER=postgres
       - DB_PASSWORD=admin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.user.rule=Host(`user.localhost`)"
+      - "traefik.http.services.user.loadbalancer.server.port=8080"
     networks:
-      demo-net:
-        
+      - demo-net
+
+  # ---------------- AUTH ----------------
+  auth_db:
+    image: postgres
+    container_name: auth_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: auth_db
+    volumes:
+      - auth_db:/var/lib/postgresql/data
+    networks:
+      - demo-net
+
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    container_name: auth
+    environment:
+      - DB_IP=auth_db
+      - DB_PORT=5432
+      - DB_DBNAME=auth_db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.auth.rule=Host(`auth.localhost`)"
+      - "traefik.http.services.auth.loadbalancer.server.port=8080"
+    networks:
+      - demo-net
+
+  # ---------------- DEVICE ----------------
+  device_db:
+    image: postgres
+    container_name: device_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: device_db
+    volumes:
+      - device_db:/var/lib/postgresql/data
+    networks:
+      - demo-net
+
+  device:
+    build:
+      context: ./device
+      dockerfile: Dockerfile
+    container_name: device
+    environment:
+      - DB_IP=device_db
+      - DB_PORT=5432
+      - DB_DBNAME=device_db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.device.rule=Host(`device.localhost`)"
+      - "traefik.http.services.device.loadbalancer.server.port=8080"
+    networks:
+      - demo-net
 
 volumes:
-  my-db:
+  user_db:
+  auth_db:
+  device_db:
 
 networks:
   demo-net:
