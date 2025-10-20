@@ -15,4 +15,4 @@ FROM openjdk:25-jdk
 WORKDIR /demo
 COPY --from=build /demo/target/user-0.0.1-SNAPSHOT.jar /demo/demo.jar
 EXPOSE 8080
-CMD ["java", "-jar", "demo.jar"]
+CMD ["java", "-jar", "demo.jar", "--server.address=0.0.0.0"]
