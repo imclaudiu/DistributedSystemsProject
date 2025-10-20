@@ -2,7 +2,7 @@ http:
   routers:
     # ---- USER ROUTER ----
     user-router:
-      rule: "Host(`localhost`) && PathPrefix(`/api/people`)"
+      rule: "Host(`localhost`) && PathPrefix(`/api/person`)"
       service: user
       entryPoints:
         - web
