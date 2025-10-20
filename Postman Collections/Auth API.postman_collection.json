@@ -1,0 +1,202 @@
+{
+	"info": {
+		"_postman_id": "7737a797-0902-4707-b3a5-e3b08ca6cd36",
+		"name": "Auth API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49375301",
+		"_collection_link": "https://imclaudiu-612138.postman.co/workspace/Claudiu's-Workspace~3c1c8c4d-813f-4649-8a18-d7c0cd963e1d/collection/49375301-7737a797-0902-4707-b3a5-e3b08ca6cd36?action=share&source=collection_link&creator=49375301"
+	},
+	"item": [
+		{
+			"name": "addAuth",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"caca\",\r\n    \"password\": \"cacaloca\",\r\n    \"role\": \"admin\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{resource}}/add",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{resource}}",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "checkPass",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"fcc88cbf-2ecf-4c0b-a5c0-c7f46eca0b5d\",\r\n    \"password\": \"parola\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{resource}}/checkPass",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{resource}}",
+						"checkPass"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllAuth",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"caca\",\r\n    \"password\": \"cacaloca\",\r\n    \"role\": \"admin\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{resource}}/getAll",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{resource}}",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAuth",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"caca\",\r\n    \"password\": \"cacaloca\",\r\n    \"role\": \"admin\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{resource}}/get/fcc88cbf-2ecf-4c0b-a5c0-c7f46eca0b5d",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{resource}}",
+						"get",
+						"fcc88cbf-2ecf-4c0b-a5c0-c7f46eca0b5d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"password\": \"parola\",\r\n    \"username\": \"cacanova\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{resource}}/update/fcc88cbf-2ecf-4c0b-a5c0-c7f46eca0b5d",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{resource}}",
+						"update",
+						"fcc88cbf-2ecf-4c0b-a5c0-c7f46eca0b5d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"fcc88cbf-2ecf-4c0b-a5c0-c7f46eca0b5d\",\r\n    \"password\": \"parola\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{resource}}/delete/da3badd0-eae8-42e1-9141-1c94634548f4",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{resource}}",
+						"delete",
+						"da3badd0-eae8-42e1-9141-1c94634548f4"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": ""
+		},
+		{
+			"key": "resource",
+			"value": "",
+			"type": "default"
+		}
+	]
+}

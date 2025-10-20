@@ -1,0 +1,156 @@
+{
+	"info": {
+		"_postman_id": "c0fd43d1-2bb0-4461-9085-498bb6b86b62",
+		"name": "Device API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49375301",
+		"_collection_link": "https://imclaudiu-612138.postman.co/workspace/Claudiu's-Workspace~3c1c8c4d-813f-4649-8a18-d7c0cd963e1d/collection/49375301-c0fd43d1-2bb0-4461-9085-498bb6b86b62?action=share&source=collection_link&creator=49375301"
+	},
+	"item": [
+		{
+			"name": "addDevice",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"deviceName\",\r\n    \"maxConsumption\": 2000\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{resource}}/add",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{resource}}",
+						"add"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllDevices",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/{{resource}}/getAll",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{resource}}",
+						"getAll"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getDevice",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/{{resource}}/get/56769ba0-2224-44d3-93eb-d5b1ae7e59ba",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{resource}}",
+						"get",
+						"56769ba0-2224-44d3-93eb-d5b1ae7e59ba"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteDevice",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/{{resource}}/delete/acbedc0b-6229-45ce-8d85-1bb7fdcb4e6f",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{resource}}",
+						"delete",
+						"acbedc0b-6229-45ce-8d85-1bb7fdcb4e6f"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateDevice",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/{{resource}}/update/56769ba0-2224-44d3-93eb-d5b1ae7e59ba",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"{{resource}}",
+						"update",
+						"56769ba0-2224-44d3-93eb-d5b1ae7e59ba"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": ""
+		},
+		{
+			"key": "resource",
+			"value": ""
+		}
+	]
+}
