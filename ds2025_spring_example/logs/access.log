@@ -112,3 +112,14 @@
 172.18.0.1 - - [20/Oct/2025:19:40:37 +0000] "GET /api/auth/get/da3badd0-eae8-42e1-9141-1c94634548f4 HTTP/1.1" 200 152 "-" "-" 39 "auth-router@file" "http://auth:8080" 7ms
 172.18.0.1 - - [20/Oct/2025:19:40:44 +0000] "DELETE /api/auth/delete/da3badd0-eae8-42e1-9141-1c94634548f4 HTTP/1.1" 200 0 "-" "-" 40 "auth-router@file" "http://auth:8080" 49ms
 172.18.0.1 - - [20/Oct/2025:19:40:49 +0000] "GET /api/auth/get/da3badd0-eae8-42e1-9141-1c94634548f4 HTTP/1.1" 404 256 "-" "-" 41 "auth-router@file" "http://auth:8080" 9ms
+172.18.0.1 - - [20/Oct/2025:19:56:50 +0000] "POST /api/person/add HTTP/1.1" 201 0 "-" "-" 1 "user-router@file" "http://user:8080" 435ms
+172.18.0.1 - - [20/Oct/2025:19:56:56 +0000] "GET /api/person/getAll HTTP/1.1" 200 385 "-" "-" 2 "user-router@file" "http://user:8080" 187ms
+172.18.0.1 - - [20/Oct/2025:19:57:08 +0000] "DELETE /api/person/delete/4bd1b6e1-85c3-498f-8d6a-bef6562568a3 HTTP/1.1" 200 0 "-" "-" 3 "user-router@file" "http://user:8080" 47ms
+172.18.0.1 - - [20/Oct/2025:19:57:27 +0000] "POST /api/device/add HTTP/1.1" 201 0 "-" "-" 4 "device-router@file" "http://device:8080" 550ms
+172.18.0.1 - - [20/Oct/2025:19:57:33 +0000] "GET /api/device/getAll HTTP/1.1" 200 67 "-" "-" 5 "device-router@file" "http://device:8080" 252ms
+172.18.0.1 - - [20/Oct/2025:19:57:47 +0000] "PATCH /api/device/update/12ab1c64-c0ca-41ca-95e2-f86946f27419 HTTP/1.1" 200 78 "-" "-" 6 "device-router@file" "http://device:8080" 62ms
+172.18.0.1 - - [20/Oct/2025:19:57:57 +0000] "DELETE /api/device/delete/12ab1c64-c0ca-41ca-95e2-f86946f27419 HTTP/1.1" 200 0 "-" "-" 7 "device-router@file" "http://device:8080" 30ms
+172.18.0.1 - - [20/Oct/2025:19:58:25 +0000] "POST /api/device/add HTTP/1.1" 400 216 "-" "-" 8 "device-router@file" "http://device:8080" 27ms
+172.18.0.1 - - [20/Oct/2025:19:58:38 +0000] "POST /api/auth/add HTTP/1.1" 201 0 "-" "-" 9 "auth-router@file" "http://auth:8080" 7190ms
+172.18.0.1 - - [21/Oct/2025:08:17:28 +0000] "GET /api/auth/getAll HTTP/1.1" 200 80 "-" "-" 1 "auth-router@file" "http://auth:8080" 735ms
+172.18.0.1 - - [21/Oct/2025:08:17:46 +0000] "GET /api/auth/get/8f2cd2c5-4b1e-4a11-b421-f4690623398f HTTP/1.1" 200 152 "-" "-" 2 "auth-router@file" "http://auth:8080" 35ms
