@@ -13,9 +13,9 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // APIs usually don't need CSRF
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register", "/auth/**").permitAll()  // public endpoints
-                        .requestMatchers("/devices/**").authenticated()      // protected endpoints
-                        .anyRequest().permitAll()                             // everything else allowed
+                        .requestMatchers("/login", "/register", "/auth/**", "/.well-known/jwks.json").permitAll()  // public endpoints
+                        .anyRequest().authenticated()      // protected endpoints
+//                        .anyRequest().permitAll()                             // everything else allowed
                 );
         return http.build();
     }

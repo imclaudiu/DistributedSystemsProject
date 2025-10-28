@@ -30,14 +30,11 @@ public class AuthenticationService {
 
     private final AuthenticationRepository authenticationRepository;
     private final JwtEncoder jwtEncoder;
-//    private final JwtEncoder jwtEncoder;
 
     public AuthenticationService(AuthenticationRepository authenticationRepository, JwtEncoder jwtEncoder){
         this.authenticationRepository = authenticationRepository;
         this.jwtEncoder = jwtEncoder;
     }
-
-
 
     public Authentication insertAuth(AuthenticationDetailsDTO authenticationDetailsDTO){
         Authentication authentication = AuthenticationBuilder.toEntity(authenticationDetailsDTO);
@@ -96,7 +93,7 @@ public class AuthenticationService {
                 .issuedAt(now)
                 .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(authentication.getUsername())
-                .claim("role", authentication.getRole())
+                .claim("roles", authentication.getRole())
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
