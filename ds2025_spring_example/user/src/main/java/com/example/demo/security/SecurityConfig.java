@@ -20,7 +20,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/device/getAll").hasRole("admin")
+                        .requestMatchers("/person/getAll").hasRole("admin")
                         .anyRequest().permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -35,7 +35,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        String jwksUri = "http://localhost/api/.well-known/jwks.json";
+        String jwksUri = "http://localhost/.well-known/jwks.json";
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwksUri).build();
 
         // Create an issuer validator
