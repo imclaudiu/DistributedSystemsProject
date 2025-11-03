@@ -44,6 +44,7 @@ services:
     build:
       context: ./user
       dockerfile: Dockerfile
+    image: user:latest
     container_name: user
     depends_on:
       - user_db
@@ -78,6 +79,7 @@ services:
     build:
       context: ./auth
       dockerfile: Dockerfile
+    image: auth:latest
     container_name: auth
     environment:
       - DB_IP=auth_db
@@ -110,6 +112,7 @@ services:
     build:
       context: ./device
       dockerfile: Dockerfile
+    image: device:latest
     container_name: device
     environment:
       - DB_IP=device_db

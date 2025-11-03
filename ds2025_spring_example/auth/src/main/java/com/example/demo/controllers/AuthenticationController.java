@@ -13,6 +13,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -63,4 +64,9 @@ public class AuthenticationController {
         this.authenticationService.delete(id);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginDTO loginDTO) {
+        String token = authenticationService.login(loginDTO);
+        return ResponseEntity.ok(Map.of("token", token));
+    }
 }

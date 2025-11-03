@@ -27,6 +27,15 @@ http:
       middlewares:
         - strip-api-prefix
 
+    # ---- JWKs ROUTER ----
+    jwks-router:
+      rule: "Host(`localhost`) && PathPrefix(`/api/.well-known/jwks.json`)"
+      service: auth
+      entryPoints:
+        - web
+      middlewares:
+        - strip-api-prefix
+
   middlewares:
     strip-api-prefix:
       stripPrefix:

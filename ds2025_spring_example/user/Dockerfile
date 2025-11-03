@@ -6,7 +6,7 @@ ENV CATALINA_OPTS="-Duser.timezone=UTC"
 
 COPY ./pom.xml /demo/pom.xml
 WORKDIR /demo
-RUN mvn dependency:go-offline
+
 COPY ./src/ /demo/src
 WORKDIR /demo
 RUN mvn clean install -DskipTests

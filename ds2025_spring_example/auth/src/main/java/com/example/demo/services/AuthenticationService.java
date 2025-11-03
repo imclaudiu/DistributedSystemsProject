@@ -11,12 +11,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,9 +29,11 @@ import java.util.UUID;
 public class AuthenticationService {
 
     private final AuthenticationRepository authenticationRepository;
+    private final JwtEncoder jwtEncoder;
 
-    public AuthenticationService(AuthenticationRepository authenticationRepository){
+    public AuthenticationService(AuthenticationRepository authenticationRepository, JwtEncoder jwtEncoder){
         this.authenticationRepository = authenticationRepository;
+        this.jwtEncoder = jwtEncoder;
     }
 
     public Authentication insertAuth(AuthenticationDetailsDTO authenticationDetailsDTO){
@@ -74,6 +81,29 @@ public class AuthenticationService {
     public void delete(UUID id){
         Authentication authentication = authenticationRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Authentication details not found."));
         authenticationRepository.delete(authentication);
+    }
+
+    public String generateToken(UUID userId) {
+        Authentication authentication = authenticationRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        Instant now = Instant.now();
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer("http://localhost/api/auth")
+                .issuedAt(now)
+                .expiresAt(now.plus(1, ChronoUnit.HOURS))
+                .subject(authentication.getUsername())
+                .claim("roles", authentication.getRole())
+                .build();
+
+        return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+
+    public String login(LoginDTO loginDTO){
+        if(!checkPassword(loginDTO)){
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials!");
+        }
+        return generateToken(loginDTO.getId());
     }
 
 //    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
