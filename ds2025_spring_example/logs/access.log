@@ -112,3 +112,4 @@
 172.18.0.1 - - [20/Oct/2025:19:40:37 +0000] "GET /api/auth/get/da3badd0-eae8-42e1-9141-1c94634548f4 HTTP/1.1" 200 152 "-" "-" 39 "auth-router@file" "http://auth:8080" 7ms
 172.18.0.1 - - [20/Oct/2025:19:40:44 +0000] "DELETE /api/auth/delete/da3badd0-eae8-42e1-9141-1c94634548f4 HTTP/1.1" 200 0 "-" "-" 40 "auth-router@file" "http://auth:8080" 49ms
 172.18.0.1 - - [20/Oct/2025:19:40:49 +0000] "GET /api/auth/get/da3badd0-eae8-42e1-9141-1c94634548f4 HTTP/1.1" 404 256 "-" "-" 41 "auth-router@file" "http://auth:8080" 9ms
+172.18.0.1 - - [28/Oct/2025:08:47:58 +0000] "GET /api/auth/getAll HTTP/1.1" 200 80 "-" "-" 1 "auth-router@file" "http://auth:8080" 499ms
