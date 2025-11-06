@@ -19,6 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/auth")
 @Validated
+@CrossOrigin
 
 public class AuthenticationController {
 

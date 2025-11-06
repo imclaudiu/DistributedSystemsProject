@@ -56,7 +56,8 @@ public class AuthenticationService {
     }
 
     public Boolean checkPassword(LoginDTO loginDTO) {
-        Authentication authentication = authenticationRepository.findById(loginDTO.getId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+          Authentication authentication = authenticationRepository.findByUsername(loginDTO.getUsername()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
+//        Authentication authentication = authenticationRepository.findById(loginDTO.getId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return BCrypt.checkpw(loginDTO.getPassword(), authentication.getPassword());
     }
 
@@ -83,8 +84,8 @@ public class AuthenticationService {
         authenticationRepository.delete(authentication);
     }
 
-    public String generateToken(UUID userId) {
-        Authentication authentication = authenticationRepository.findById(userId)
+    public String generateToken(String username) {
+        Authentication authentication = authenticationRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Instant now = Instant.now();
@@ -103,7 +104,7 @@ public class AuthenticationService {
         if(!checkPassword(loginDTO)){
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials!");
         }
-        return generateToken(loginDTO.getId());
+        return generateToken(loginDTO.getUsername());
     }
 
 //    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);

@@ -16,10 +16,10 @@ public class LoginDTO {
         this.password = password;
     }
 
-    public LoginDTO(UUID id, String password){
-        this.id = id;
-        this.password = password;
-    }
+//    public LoginDTO(UUID id, String password){
+//        this.id = id;
+//        this.password = password;
+//    }
 
     public UUID getId() {
         return id;
