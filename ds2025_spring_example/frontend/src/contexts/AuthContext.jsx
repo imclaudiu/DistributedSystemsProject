@@ -1,0 +1,139 @@
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { authService, parseJwt } from '../services/api';
+
+const AuthContext = createContext();
+
+export function useAuth() {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider');
+    }
+    return context;
+}
+
+export function AuthProvider({ children }) {
+    const [token, setToken] = useState(() => localStorage.getItem('token'));
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        console.log('AuthProvider mounted, token:', token);
+
+        if (token) {
+            try {
+                const userData = parseJwt(token);
+                console.log('Parsed user data:', userData);
+
+                if (userData && userData.exp * 1000 > Date.now()) {
+                    setUser(userData);
+                } else {
+                    console.log('Token expired, logging out');
+                    logout();
+                }
+            } catch (error) {
+                console.error('Error parsing token:', error);
+                logout();
+            }
+        }
+        setLoading(false);
+    }, [token]);
+
+    const register = async (registerData) => {
+        try {
+            console.log('Attempting registration with:', registerData);
+
+            // Send data in the format your backend expects
+            const response = await authService.register({
+                username: registerData.username,
+                password: registerData.password,
+                role: registerData.role || 'user' // Ensure role is always 'user'
+            });
+
+            console.log('Registration successful:', response);
+            return { success: true };
+        } catch (error) {
+            console.error('Registration error:', error);
+            return {
+                success: false,
+                error: error.response?.data?.message || 'Registration failed'
+            };
+        }
+    };
+
+    const login = async (loginData) => {
+        try {
+            console.log('Attempting login with:', loginData);
+            const response = await authService.login(loginData);
+            const { token } = response.data;
+
+            localStorage.setItem('token', token);
+            setToken(token);
+
+            const userData = parseJwt(token);
+            setUser(userData);
+
+            console.log('Login successful, user:', userData);
+            return { success: true };
+        } catch (error) {
+            console.error('Login error:', error);
+            return {
+                success: false,
+                error: error.response?.data?.message || 'Login failed'
+            };
+        }
+    };
+
+    const logout = () => {
+        console.log('Logging out');
+        localStorage.removeItem('token');
+        setToken(null);
+        setUser(null);
+    };
+
+    const isAdmin = () => {
+        if (!user || !user.roles) {
+            console.log('No user or roles found');
+            return false;
+        }
+
+        // Handle different role formats
+        let rolesArray = [];
+
+        if (Array.isArray(user.roles)) {
+            rolesArray = user.roles;
+        } else if (typeof user.roles === 'string') {
+            // If roles is a string, split by comma or space
+            rolesArray = user.roles.split(/[, ]+/);
+        } else {
+            console.log('Unexpected roles format:', user.roles);
+            return false;
+        }
+
+        // Check for admin role in various possible formats
+        const isAdminUser = rolesArray.some(role =>
+            role === 'ROLE_admin' ||
+            role === 'admin' ||
+            role === 'ADMIN' ||
+            role.includes('admin')
+        );
+
+        console.log('isAdmin check - roles:', rolesArray, 'result:', isAdminUser);
+        return isAdminUser;
+    };
+
+    const value = {
+        token,
+        user,
+        login,
+        logout,
+        register,
+        isAdmin,
+        loading
+    };
+
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
+}

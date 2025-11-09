@@ -17,6 +17,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/person")
 @Validated
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 public class PersonController {
 
     private final PersonService personService;

@@ -79,10 +79,11 @@ public class AuthenticationService {
         return authenticationRepository.save(authentication);
     }
 
-    public void delete(UUID id){
-        Authentication authentication = authenticationRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Authentication details not found."));
+    public void delete(String username){
+        Authentication authentication = authenticationRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("Authentication details not found."));
         authenticationRepository.delete(authentication);
     }
+
 
     public String generateToken(String username) {
         Authentication authentication = authenticationRepository.findByUsername(username)

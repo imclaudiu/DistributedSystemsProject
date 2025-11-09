@@ -60,10 +60,13 @@ public class AuthenticationController {
         return ResponseEntity.ok(this.authenticationService.patchDevice(id, authenticationDetailsDTO));
     }
 
-    @DeleteMapping("/delete/{id}")
-    public void delete(@PathVariable UUID id){
-        this.authenticationService.delete(id);
+
+    @DeleteMapping("/delete/{username}")
+    public ResponseEntity<Void> deleteAuth(@PathVariable String username) {
+        authenticationService.delete(username);
+        return ResponseEntity.noContent().build();
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginDTO loginDTO) {

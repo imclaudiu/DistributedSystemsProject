@@ -29,14 +29,18 @@ public class Device implements Serializable{
     @Column(name = "maxConsumption", nullable = false)
     private Integer maxConsumption;
 
+    @Column(name = "owner", nullable = false)
+    private UUID ownerID;
+
 
 
     public Device() {
     }
 
-    public Device(String name, Integer maxConsumption) {
+    public Device(String name, Integer maxConsumption, UUID ownerID) {
         this.name = name;
         this.maxConsumption = maxConsumption;
+        this.ownerID = ownerID;
     }
 
     public UUID getId() {
@@ -61,5 +65,13 @@ public class Device implements Serializable{
 
     public void setMaxConsumption(Integer maxConsumption) {
         this.maxConsumption = maxConsumption;
+    }
+
+    public UUID getOwnerID() {
+        return ownerID;
+    }
+
+    public void setOwnerID(UUID ownerID) {
+        this.ownerID = ownerID;
     }
 }

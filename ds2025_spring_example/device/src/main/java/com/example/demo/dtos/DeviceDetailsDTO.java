@@ -10,14 +10,16 @@ public class DeviceDetailsDTO {
     @NotBlank(message = "Device name required")
     private String name;
     private Integer maxConsumption;
+    private UUID ownerID;
 
     public DeviceDetailsDTO() {
     }
 
-    public DeviceDetailsDTO(UUID id, String name, Integer maxConsumption) {
+    public DeviceDetailsDTO(UUID id, String name, Integer maxConsumption, UUID ownerID) {
         this.id = id;
         this.name = name;
         this.maxConsumption = maxConsumption;
+        this.ownerID = ownerID;
     }
 
     public DeviceDetailsDTO(String name, Integer maxConsumption)
@@ -36,6 +38,14 @@ public class DeviceDetailsDTO {
 
     public String getName() {
         return name;
+    }
+
+    public UUID getOwnerID() {
+        return ownerID;
+    }
+
+    public void setOwnerID(UUID ownerID) {
+        this.ownerID = ownerID;
     }
 
     public void setName(String name) {
