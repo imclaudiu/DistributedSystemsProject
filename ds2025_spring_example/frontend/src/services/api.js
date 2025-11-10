@@ -3,6 +3,7 @@ import axios from 'axios';
 // Base URLs for different services
 const AUTH_BASE_URL = 'http://localhost:8080/auth';
 const USER_BASE_URL = 'http://localhost:8081/person';
+const DEVICE_BASE_URL = 'http://localhost:8083/device';
 
 // Create axios instances for different services
 const authApi = axios.create({
@@ -12,6 +13,10 @@ const authApi = axios.create({
 const userApi = axios.create({
     baseURL: USER_BASE_URL,
     timeout: 10000, // 10 second timeout
+});
+
+const deviceApi = axios.create({
+    baseURL: DEVICE_BASE_URL,
 });
 
 // Add token to requests for user service
@@ -71,6 +76,17 @@ export const userService = {
     createPerson: (personData) => userApi.post('/add', personData),
     updatePerson: (id, personData) => userApi.patch(`/update/${id}`, personData),
     deletePerson: (id) => userApi.delete(`/delete/${id}`),
+};
+
+//Device service methods
+export const deviceService = {
+    findByOwnerId: (id) => deviceApi.get(`/findByOwnerId/${id}`),
+    createDevice: (deviceData) => deviceApi.post('/add', deviceData),
+    // getAllPersons: () => userApi.get('/getAll'),
+    // getPerson: (id) => userApi.get(`/get/${id}`),
+    // createPerson: (personData) => userApi.post('/add', personData),
+    updateDevice: (id, deviceData) => deviceApi.patch(`/update/${id}`, deviceData),
+    deleteDevice: (id) => deviceApi.delete(`/delete/${id}`),
 };
 
 // Utility to parse JWT token

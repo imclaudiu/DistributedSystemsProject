@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import {authService, userService} from '../services/api';
+import {authService, deviceService, userService} from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import './../styles/Settings.css';
 
@@ -126,7 +126,20 @@ const Settings = () => {
         try {
 
             // Option B: If above fails, try with the user ID from your token
-            const userId = user?.sub;
+            const userId = user?.id;
+
+            const devicesResponse = await deviceService.findByOwnerId(userId);
+            const userDevices = devicesResponse.data;
+
+            // Delete all devices associated with this user
+            if (userDevices && userDevices.length > 0) {
+                const deleteDevicePromises = userDevices.map(device =>
+                    deviceService.deleteDevice(device.id)
+                );
+                await Promise.all(deleteDevicePromises);
+                console.log(`Deleted ${userDevices.length} devices for user ${userId}`);
+            }
+
             await authService.deleteAuth(user?.sub);
             await userService.deletePerson(user?.id);
 

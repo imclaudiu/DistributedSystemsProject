@@ -29,7 +29,7 @@ public class Device implements Serializable{
     @Column(name = "maxConsumption", nullable = false)
     private Integer maxConsumption;
 
-    @Column(name = "owner", nullable = false)
+    @Column(name = "owner", nullable = true)
     private UUID ownerID;
 
 

@@ -11,7 +11,7 @@ public class DeviceBuilder {
     }
 
     public static DeviceDTO toDeviceDTO(Device device){
-        return new DeviceDTO(device.getId(), device.getName());
+        return new DeviceDTO(device.getId(), device.getName(), device.getOwnerID());
     }
 
     public static Device toEntity(DeviceDetailsDTO deviceDetailsDTO){

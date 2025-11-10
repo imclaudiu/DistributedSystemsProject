@@ -46,6 +46,11 @@ public class DeviceController {
         return deviceService.getDevice(id);
     }
 
+    @GetMapping("/findByOwnerId/{id}")
+    public List<DeviceDetailsDTO> findByOwnerId(@PathVariable UUID id){
+        return deviceService.findByOwnerId(id);
+    }
+
     @DeleteMapping("/delete/{id}")
     public void deleteDevice(@PathVariable UUID id)
     {
@@ -57,6 +62,6 @@ public class DeviceController {
         return deviceService.patchDevice(id, deviceDetailsDTO);
     }
 
-//    @DeleteMapping("/deleteAll")
-//    public void deleteAll(){deviceService.deleteAllDevices();}
+    @DeleteMapping("/deleteAll")
+    public void deleteAll(){deviceService.deleteAllDevices();}
 }

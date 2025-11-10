@@ -1,18 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import {authService, userService} from '../services/api';
-import { useNavigate } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';
+import {useAuth} from '../contexts/AuthContext';
+import {authService, deviceService, userService} from '../services/api';
+import {useNavigate} from 'react-router-dom';
 import './../styles/Dashboard.css';
 
 const Dashboard = () => {
     const [persons, setPersons] = useState([]);
     const [personDetails, setPersonDetails] = useState(null);
+    const [device, setDevice] = useState([]);
     const [personLoading, setPersonLoading] = useState(false);
+    const [deviceLoading, setDeviceLoading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [errorDetails, setErrorDetails] = useState('');
-    const { user, logout, isAdmin } = useAuth();
+    const {user, logout, isAdmin} = useAuth();
     const navigate = useNavigate();
+    const [showCreateDeviceModal, setShowCreateDeviceModal] = useState(false);
+    const [showUpdateDeviceModal, setShowUpdateDeviceModal] = useState(false);
+    const [newDevice, setNewDevice] = useState({
+        name: '',
+        maxConsumption: '',
+        ownerId: ''
+    });
+    const [updateDevice, setUpdateDevice] = useState({
+        id: '',
+        name: '',
+        maxConsumption: '',
+    });
 
     useEffect(() => {
         if (isAdmin()) {
@@ -25,6 +39,12 @@ const Dashboard = () => {
     useEffect(() => {
         if (userId) {
             fetchPersonDetails();
+        }
+    }, [userId]);
+
+    useEffect(() => {
+        if (userId) {
+            fetchDevices();
         }
     }, [userId]);
 
@@ -85,68 +105,167 @@ const Dashboard = () => {
         setLoading(false);
     };
 
+    const fetchDevices = async () => {
+        setDeviceLoading(true);
+        setError('');
+        setErrorDetails('');
+        try {
+            console.log('Fetching devices...');
+            const response = await deviceService.findByOwnerId(userId);
+            console.log('Device response:', response);
+            setDevice(response.data);
+        } catch (error) {
+            console.error('Error fetching persons:', error);
+
+            let errorMessage = 'Failed to fetch devices. ';
+            let details = '';
+
+            if (error.response) {
+                // Server responded with error status
+                errorMessage += `Server error: ${error.response.status}`;
+                details = `Status: ${error.response.status}\nData: ${JSON.stringify(error.response.data, null, 2)}`;
+            } else if (error.request) {
+                // Request was made but no response received
+                errorMessage += 'No response from server.';
+                details = 'The request was made but no response was received. Check if the backend is running.';
+            } else {
+                // Something else happened
+                errorMessage += 'Unexpected error.';
+                details = error.message;
+            }
+
+            setError(errorMessage);
+            setErrorDetails(details);
+        }
+        setDeviceLoading(false);
+    };
+
+    const handleDeleteDevice = async (deviceId) => {
+        if (!window.confirm('Are you sure you want to delete this device? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            await deviceService.deleteDevice(deviceId);
+            // Remove the device from the local state
+            setDevice(device.filter(deviceItem => deviceItem.id !== deviceId));
+            alert('Device deleted successfully!');
+        } catch (error) {
+            console.error('Error deleting device:', error);
+            let errorMessage = 'Failed to delete device. ';
+
+            if (error.response?.status === 401) {
+                errorMessage = 'Unauthorized. Please log in again.';
+            } else if (error.response?.status === 403) {
+                errorMessage = 'You do not have permission to delete this device.';
+            } else if (error.response?.status === 404) {
+                errorMessage = 'Device not found.';
+            }
+
+            setError(errorMessage);
+        }
+    };
+
+    const handleUpdateDeviceClick = (device) => {
+        setUpdateDevice({
+            id: device.id,
+            name: device.name || '',
+            maxConsumption: device.maxConsumption || '',
+        });
+        setShowUpdateDeviceModal(true);
+    };
+
+    const handleUpdateDeviceSubmit = async () => {
+        if (!updateDevice.name && !updateDevice.maxConsumption) {
+            alert('Please fill in at least one field to update');
+            return;
+        }
+
+        try {
+            // Create update payload with only the fields that have values
+            const updatePayload = {};
+            if (updateDevice.name) updatePayload.name = updateDevice.name;
+            if (updateDevice.maxConsumption) updatePayload.maxConsumption = parseInt(updateDevice.maxConsumption);
+
+            await deviceService.updateDevice(updateDevice.id, updatePayload);
+            alert('Device updated successfully!');
+            handleCloseUpdateModal();
+            fetchDevices(); // Refresh the devices list
+        } catch (error) {
+            console.error('Error updating device:', error);
+            alert('Failed to update device');
+        }
+    };
+
+    const handleCloseUpdateModal = () => {
+        setShowUpdateDeviceModal(false);
+        setUpdateDevice({
+            id: '',
+            name: '',
+            maxConsumption: '',
+        });
+    };
+
+    const handleUpdateInputChange = (e) => {
+        const { name, value } = e.target;
+        setUpdateDevice(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleCreateDeviceClick = () => {
+        setShowCreateDeviceModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowCreateDeviceModal(false);
+        setNewDevice({ name: '', maxConsumption: '', ownerId: '' });
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewDevice(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleCreateDeviceSubmit = async () => {
+        if (!newDevice.name || !newDevice.maxConsumption) {
+            alert('Please fill in all fields');
+            return;
+        }
+
+        try {
+            await deviceService.createDevice({
+                ...newDevice,
+                maxConsumption: parseInt(newDevice.maxConsumption),
+                ownerID: user.id
+            });
+            alert('Device created successfully!');
+            handleCloseModal();
+            fetchDevices(); // Refresh the devices list
+        } catch (error) {
+            console.error('Error creating device:', error);
+            alert('Failed to create device');
+        }
+    };
+
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
 
-    const handleSettings =() =>
-    {
+    const handleSettings = () => {
         navigate('/settings');
     }
-
-    const deleteAccount = async () => {
-        if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-            return;
-        }
-
-        console.log('Current user object:', user);
-        console.log('Available user properties:', Object.keys(user || {}));
-        console.log('User sub:', user?.sub);
-        console.log('User id:', user?.roles);
-        console.log('User username:', user?.username);
-
-        // setDeleteLoading(true);
-        try {
-
-            // Option B: If above fails, try with the user ID from your token
-            const userId = user?.sub;
-            await authService.deleteAuth(user?.sub);
-
-            console.log('Account deleted successfully');
-            logout();
-            navigate('/login');
-            alert('Your account has been deleted successfully.');
-
-        } catch (error) {
-            console.error('Error deleting account:', error);
-
-            let errorMessage = 'Failed to delete account. ';
-            if (error.response?.status === 401) {
-                errorMessage = 'Unauthorized. Please log in again.';
-            } else if (error.response?.status === 403) {
-                errorMessage = 'You do not have permission to delete this account.';
-            } else if (error.response?.status === 404) {
-                errorMessage = 'Account not found.';
-            }
-
-            setError(errorMessage);
-        }
-        // setDeleteLoading(false);
-    };
 
     const displayRoles = () => {
         if (!user || !user.roles) return 'No roles';
 
         return user.roles;
     };
-
-
-
-
-    // const displayDetails = () =>{
-    //     if(u)
-    // }
 
     if (!user) {
         return (
@@ -166,8 +285,6 @@ const Dashboard = () => {
                     <button onClick={handleLogout} className="logout-button">
                         Logout
                     </button>
-
-                    {/*<button className="settings-button">Settings</button>*/}
 
                     <button onClick={handleSettings} className={"settings-button"}>
                         Settings
@@ -189,18 +306,136 @@ const Dashboard = () => {
                                     <p><strong>Address:</strong> {personDetails.address}</p>
                                     <p><strong>Age:</strong> {personDetails.age}</p>
                                     <strong>Roles:</strong> {displayRoles()}
-                                    {/* Add other fields from your personDetails object */}
                                 </div>
                             ) : (
                                 <p>No profile details found. Please complete your profile.</p>
                             )}
                         </div>
-
                     </div>
-                    {/*<div className="token-info">*/}
-                    {/*    <strong>Token Preview:</strong> {user?.sub ? 'Valid token' : 'Invalid token'}*/}
-                    {/*</div>*/}
+                </div>
 
+                <div className="user-section">
+                    <h2>Welcome to your Dashboard</h2>
+
+                    {/* Create Device Modal */}
+                    {showCreateDeviceModal && (
+                        <div className="modal-overlay">
+                            <div className="modal-content">
+                                <h3>Create New Device</h3>
+                                <div className="input-group">
+                                    <label>Device Name:</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={newDevice.name}
+                                        onChange={handleInputChange}
+                                        placeholder="Enter device name"
+                                    />
+                                </div>
+                                <div className="input-group">
+                                    <label>Max Consumption:</label>
+                                    <input
+                                        type="number"
+                                        name="maxConsumption"
+                                        value={newDevice.maxConsumption}
+                                        onChange={handleInputChange}
+                                        placeholder="Enter max consumption"
+                                    />
+                                </div>
+                                <div className="modal-buttons">
+                                    <button onClick={handleCreateDeviceSubmit} className="submit-button">
+                                        Create Device
+                                    </button>
+                                    <button onClick={handleCloseModal} className="cancel-button">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Update Device Modal */}
+                    {showUpdateDeviceModal && (
+                        <div className="modal-overlay">
+                            <div className="modal-content">
+                                <h3>Update Device</h3>
+                                <div className="input-group">
+                                    <label>Device Name:</label>
+                                    <input
+                                        type="text"
+                                        name="name"
+                                        value={updateDevice.name}
+                                        onChange={handleUpdateInputChange}
+                                        placeholder="Enter new device name (optional)"
+                                    />
+                                </div>
+                                <div className="input-group">
+                                    <label>Max Consumption:</label>
+                                    <input
+                                        type="number"
+                                        name="maxConsumption"
+                                        value={updateDevice.maxConsumption}
+                                        onChange={handleUpdateInputChange}
+                                        placeholder="Enter new max consumption (optional)"
+                                    />
+                                </div>
+                                <div className="modal-buttons">
+                                    <button onClick={handleUpdateDeviceSubmit} className="submit-button">
+                                        Update Device
+                                    </button>
+                                    <button onClick={handleCloseUpdateModal} className="cancel-button">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <button
+                        onClick={handleCreateDeviceClick}
+                        className="create-device-button"
+                    >
+                        Create new device
+                    </button>
+                    {device.length > 0 ? (
+                        <div className="device-table">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>MaxConsumption</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {device.map((deviceItem) => (
+                                    <tr key={deviceItem.id}>
+                                        <td>{deviceItem.name || 'N/A'}</td>
+                                        <td>{deviceItem.maxConsumption || 'N/A'}</td>
+                                        <td>
+                                            <button
+                                                onClick={() => handleUpdateDeviceClick(deviceItem)}
+                                                className="update-device-button"
+                                                title="Update Device"
+                                            >
+                                                Update
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteDevice(deviceItem.id)}
+                                                className="delete-device-button"
+                                                title="Delete Device"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    ) : (
+                        !loading && <p>No devices found!</p>
+                    )}
                 </div>
 
                 {isAdmin() ? (
@@ -244,7 +479,6 @@ const Dashboard = () => {
                                         <tr key={person.id}>
                                             <td>{person.id}</td>
                                             <td>{person.name || 'N/A'}</td>
-                                            <td>{person.email || 'N/A'}</td>
                                         </tr>
                                     ))}
                                     </tbody>
@@ -254,13 +488,8 @@ const Dashboard = () => {
                             !loading && <p>No persons found. Click "Refresh Persons" to load data.</p>
                         )}
                     </div>
-                ) : (
-                    <div className="user-section">
-                        <h2>Welcome to your Dashboard</h2>
-                        <p>You don't have admin privileges to view the person management section.</p>
-                        <p>Your roles: {displayRoles()}</p>
-                    </div>
-                )}
+                ) : (<p>Not an admin!</p>)}
+
             </div>
         </div>
     );

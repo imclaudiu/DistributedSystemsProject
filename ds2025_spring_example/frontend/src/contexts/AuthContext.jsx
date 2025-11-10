@@ -156,7 +156,7 @@ export function AuthProvider({ children }) {
             role.includes('admin')
         );
 
-        console.log('isAdmin check - roles:', rolesArray, 'result:', isAdminUser);
+        // console.log('isAdmin check - roles:', rolesArray, 'result:', isAdminUser);
         return isAdminUser;
     };
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.hibernate.sql.results.LoadingLogger.LOGGER;
 
@@ -63,8 +64,14 @@ public class DeviceService {
         return ResponseEntity.ok(deviceRepository.save(device));
     }
 
-//    public void deleteAllDevices(){
-//        deviceRepository.deleteAll();
-//    }
+    public List<DeviceDetailsDTO> findByOwnerId(UUID id){
+        List<Device> devices = this.deviceRepository.findByOwnerID(id);
+        return devices.stream()
+                .map(DeviceBuilder::toDeviceDetailsDTO)
+                .collect(Collectors.toList());
+    }
+    public void deleteAllDevices(){
+        deviceRepository.deleteAll();
+    }
 
 }
