@@ -45,11 +45,10 @@ public class PersonService {
         return PersonBuilder.toPersonDetailsDTO(prosumerOptional.get());
     }
 
-    public UUID insert(PersonDetailsDTO personDTO) {
-        Person person = PersonBuilder.toEntity(personDTO);
-        person = personRepository.save(person);
-        LOGGER.debug("Person with id {} was inserted in db", person.getId());
-        return person.getId();
+    public UUID insert(Person personDTO) {
+        personRepository.save(personDTO);
+        LOGGER.debug("Person with id {} was inserted in db", personDTO.getId());
+        return personDTO.getId();
     }
 
     public void delete(UUID id){
@@ -61,8 +60,8 @@ public class PersonService {
         personRepository.delete(personOptional.get());
     }
 
-    public Person updatePerson(PersonDetailsDTO person){
-        Person newPerson = this.personRepository.findById(person.getId())
+    public Person updatePerson(UUID id, PersonDetailsDTO person){
+        Person newPerson = this.personRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         Person existingPerson = PersonBuilder.toEntity(person);
         if(existingPerson.getName() != null && !existingPerson.getName().isBlank())
@@ -80,5 +79,9 @@ public class PersonService {
 
         personRepository.save(newPerson);
         return newPerson;
+    }
+
+    public void deleteAll(){
+        this.personRepository.deleteAll();
     }
 }

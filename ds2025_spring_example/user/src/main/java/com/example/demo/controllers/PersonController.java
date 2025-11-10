@@ -32,7 +32,7 @@ public class PersonController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Void> create(@Valid @RequestBody PersonDetailsDTO person) {
+    public ResponseEntity<Void> create(@Valid @RequestBody Person person) {
         UUID id = personService.insert(person);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -52,8 +52,13 @@ public class PersonController {
         personService.delete(id);
     }
 
-    @PutMapping("update/{id}")
+    @PatchMapping("update/{id}")
     public Person update(@PathVariable UUID id, @RequestBody PersonDetailsDTO person){
-        return personService.updatePerson(person);
+        return personService.updatePerson(id, person);
+    }
+
+    @DeleteMapping("deleteAll")
+    public void deleteAll(){
+        personService.deleteAll();
     }
 }

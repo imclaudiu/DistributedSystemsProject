@@ -6,6 +6,8 @@ import './../styles/Dashboard.css';
 
 const Dashboard = () => {
     const [persons, setPersons] = useState([]);
+    const [personDetails, setPersonDetails] = useState(null);
+    const [personLoading, setPersonLoading] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [errorDetails, setErrorDetails] = useState('');
@@ -17,6 +19,36 @@ const Dashboard = () => {
             fetchPersons();
         }
     }, [isAdmin]);
+
+    const userId = user?.id || user?.sub;
+
+    useEffect(() => {
+        if (userId) {
+            fetchPersonDetails();
+        }
+    }, [userId]);
+
+    const fetchPersonDetails = async () => {
+        setPersonLoading(true);
+        try {
+            console.log('Fetching person details for ID:', userId);
+
+            // Use the getPerson endpoint with the ID
+            const response = await userService.getPerson(userId);
+            setPersonDetails(response.data);
+            console.log('Person details found:', response.data);
+
+        } catch (error) {
+            console.error('Error fetching person details:', error);
+            setPersonDetails(null);
+
+            // Don't show error if it's just 404 (person not found yet)
+            if (error.response?.status !== 404) {
+                setError('Failed to load profile details');
+            }
+        }
+        setPersonLoading(false);
+    };
 
     const fetchPersons = async () => {
         setLoading(true);
@@ -58,6 +90,11 @@ const Dashboard = () => {
         navigate('/login');
     };
 
+    const handleSettings =() =>
+    {
+        navigate('/settings');
+    }
+
     const deleteAccount = async () => {
         if (!window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
             return;
@@ -71,10 +108,6 @@ const Dashboard = () => {
 
         // setDeleteLoading(true);
         try {
-            // Try different approaches - see which one your backend supports
-
-            // Option A: Try with 'me' as ID
-            // await userService.deletePerson('me');
 
             // Option B: If above fails, try with the user ID from your token
             const userId = user?.sub;
@@ -105,14 +138,15 @@ const Dashboard = () => {
     const displayRoles = () => {
         if (!user || !user.roles) return 'No roles';
 
-        if (Array.isArray(user.roles)) {
-            return user.roles.join(', ');
-        } else if (typeof user.roles === 'string') {
-            return user.roles;
-        } else {
-            return JSON.stringify(user.roles);
-        }
+        return user.roles;
     };
+
+
+
+
+    // const displayDetails = () =>{
+    //     if(u)
+    // }
 
     if (!user) {
         return (
@@ -132,8 +166,11 @@ const Dashboard = () => {
                     <button onClick={handleLogout} className="logout-button">
                         Logout
                     </button>
-                    <button onClick={deleteAccount} className={"deleteAccount-button"}>
-                        Delete Account
+
+                    {/*<button className="settings-button">Settings</button>*/}
+
+                    <button onClick={handleSettings} className={"settings-button"}>
+                        Settings
                     </button>
                 </div>
 
@@ -142,11 +179,28 @@ const Dashboard = () => {
             <div className="dashboard-content">
                 <div className="user-info-panel">
                     <div className="roles-info">
-                        <strong>Roles:</strong> {displayRoles()}
+                        <div className="person-details-section">
+                            <h3>Profile Details</h3>
+                            {personLoading ? (
+                                <p>Loading profile details...</p>
+                            ) : personDetails ? (
+                                <div>
+                                    <p><strong>Name:</strong> {personDetails.name}</p>
+                                    <p><strong>Address:</strong> {personDetails.address}</p>
+                                    <p><strong>Age:</strong> {personDetails.age}</p>
+                                    <strong>Roles:</strong> {displayRoles()}
+                                    {/* Add other fields from your personDetails object */}
+                                </div>
+                            ) : (
+                                <p>No profile details found. Please complete your profile.</p>
+                            )}
+                        </div>
+
                     </div>
-                    <div className="token-info">
-                        <strong>Token Preview:</strong> {user?.sub ? 'Valid token' : 'Invalid token'}
-                    </div>
+                    {/*<div className="token-info">*/}
+                    {/*    <strong>Token Preview:</strong> {user?.sub ? 'Valid token' : 'Invalid token'}*/}
+                    {/*</div>*/}
+
                 </div>
 
                 {isAdmin() ? (
@@ -160,15 +214,6 @@ const Dashboard = () => {
                                 className="refresh-button"
                             >
                                 {loading ? 'Loading...' : 'Refresh Persons'}
-                            </button>
-                            <button
-                                onClick={() => {
-                                    console.log('Current user:', user);
-                                    console.log('Token:', localStorage.getItem('token'));
-                                }}
-                                className="debug-button"
-                            >
-                                Debug Info
                             </button>
                         </div>
 

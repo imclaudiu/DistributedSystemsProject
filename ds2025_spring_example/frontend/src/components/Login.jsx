@@ -21,6 +21,9 @@ const Login = () => {
         });
     };
 
+    const handleRegister = () =>
+        navigate('/register');
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
@@ -75,6 +78,17 @@ const Login = () => {
                     >
                         {loading ? 'Logging in...' : 'Login'}
                     </button>
+
+                    <div className="register-section">
+                        <p>Don't have an account?</p>
+                        <button
+                            onClick={handleRegister}
+                            className="register-button"
+                            type="button"
+                        >
+                            Register
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,13 +31,21 @@ public class AuthenticationController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Void> insertAuth(@Valid @RequestBody AuthenticationDetailsDTO authenticationDetailsDTO){
+    public ResponseEntity<Map<String, String>> insertAuth(@Valid @RequestBody AuthenticationDetailsDTO authenticationDetailsDTO) {
         Authentication authentication = this.authenticationService.insertAuth(authenticationDetailsDTO);
+
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("{/id}")
+                .path("/{id}")
                 .buildAndExpand(authentication.getId()).toUri();
-        return ResponseEntity.created(location).build();
+
+        // Return both location header and UUID in body
+        Map<String, String> response = new HashMap<>();
+        response.put("id", authentication.getId().toString());
+        response.put("message", "User created successfully");
+
+        return ResponseEntity.created(location)
+                .body(response);
     }
 
     @GetMapping("/getAll")
@@ -72,5 +81,10 @@ public class AuthenticationController {
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginDTO loginDTO) {
         String token = authenticationService.login(loginDTO);
         return ResponseEntity.ok(Map.of("token", token));
+    }
+
+    @DeleteMapping("deleteAll")
+    public void deleteAll(){
+        authenticationService.deleteAll();
     }
 }

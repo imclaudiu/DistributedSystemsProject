@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { authService, parseJwt } from '../services/api';
+import {authService, parseJwt, userService} from '../services/api';
 
 const AuthContext = createContext();
 
@@ -42,20 +42,59 @@ export function AuthProvider({ children }) {
         try {
             console.log('Attempting registration with:', registerData);
 
-            // Send data in the format your backend expects
-            const response = await authService.register({
+            // 1. Register in auth service
+            const authResponse = await authService.register({
                 username: registerData.username,
                 password: registerData.password,
-                role: registerData.role || 'user' // Ensure role is always 'user'
+                role: 'user'
             });
 
-            console.log('Registration successful:', response);
-            return { success: true };
+            console.log('Full auth response:', authResponse);
+
+            // 2. Extract UUID from response body (new backend format)
+            const uuid = authResponse.data?.id;
+            console.log('UUID from response body:', uuid);
+
+            if (!uuid) {
+                throw new Error('No user ID returned from auth service');
+            }
+
+            // 3. Create user in person service with the same UUID
+            try {
+                const userResponse = await userService.createPerson({
+                    id: uuid,
+                    name: registerData.name,
+                    address: registerData.address,
+                    age: registerData.age,
+                });
+                console.log('User created in person service:', userResponse);
+            } catch (userError) {
+                console.error('Failed to create user in person service:', userError);
+                // Don't fail registration - user can complete profile later
+                // You might want to implement rollback here if needed
+            }
+
+            return {
+                success: true,
+                userId: uuid
+            };
+
         } catch (error) {
             console.error('Registration error:', error);
+
+            let errorMessage = 'Registration failed';
+
+            if (error.response?.status === 409) {
+                errorMessage = 'Username already exists';
+            } else if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+
             return {
                 success: false,
-                error: error.response?.data?.message || 'Registration failed'
+                error: errorMessage
             };
         }
     };

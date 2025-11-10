@@ -61,6 +61,7 @@ export const authService = {
     register: (authData) => authApi.post('/add', authData),
     checkPassword: (loginData) => authApi.post('/checkPass', loginData),
     deleteAuth: (username) => authApi.delete(`/delete/${username}`),
+    updateAuth: (id, authData) => authApi.patch(`/update/${id}`)
 };
 
 // User service methods
@@ -68,7 +69,7 @@ export const userService = {
     getAllPersons: () => userApi.get('/getAll'),
     getPerson: (id) => userApi.get(`/get/${id}`),
     createPerson: (personData) => userApi.post('/add', personData),
-    updatePerson: (id, personData) => userApi.put(`/update/${id}`, personData),
+    updatePerson: (id, personData) => userApi.patch(`/update/${id}`, personData),
     deletePerson: (id) => userApi.delete(`/delete/${id}`),
 };
 

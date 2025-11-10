@@ -96,6 +96,7 @@ public class AuthenticationService {
                 .expiresAt(now.plus(1, ChronoUnit.HOURS))
                 .subject(authentication.getUsername())
                 .claim("roles", authentication.getRole())
+                .claim("id", authentication.getId().toString())
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
@@ -108,6 +109,10 @@ public class AuthenticationService {
         return generateToken(loginDTO.getUsername());
     }
 
+
+    public void deleteAll(){
+        this.authenticationRepository.deleteAll();
+    }
 //    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 //    String result = encoder.encode("myPassword");
 //    assertTrue(encoder.matches("myPassword", result));

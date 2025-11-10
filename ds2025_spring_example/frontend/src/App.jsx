@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Dashboard from './components/Dashboard.jsx';
 import './styles/App.css';
 import Register from "./components/Register.jsx";
+import Settings from "./components/Settings.jsx";
 
 function ProtectedRoute({ children }) {
     const { token, loading } = useAuth();
@@ -36,6 +37,7 @@ function App() {
                             }
                         />
                         <Route path="/register" element={<Register />} />
+                        <Route path="/settings" element={<Settings />} />
                         <Route
                             path="/dashboard"
                             element={
