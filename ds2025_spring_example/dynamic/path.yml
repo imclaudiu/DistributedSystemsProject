@@ -1,5 +1,14 @@
 http:
   routers:
+
+    # ---- FRONTEND ROUTER (CATCH-ALL) ----
+    # NEW ROUTER for the frontend
+    frontend-router:
+      rule: "Host(`localhost`) && PathPrefix(`/`)"
+      service: frontend
+      entryPoints:
+        - web
+
     # ---- USER ROUTER ----
     user-router:
       rule: "Host(`localhost`) && PathPrefix(`/api/person`)"
@@ -57,3 +66,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://device:8080"
+
+    frontend:
+      loadBalancer:
+        servers:
+          # This assumes your frontend container serves on port 80 (e.g., Nginx)
+          # Change this port if your frontend container uses a different one
+          - url: "http://frontend:80"

@@ -11,7 +11,8 @@ WORKDIR /demo
 RUN mvn clean install -DskipTests
 
 
-FROM openjdk:25-jdk
+FROM openjdk:25-ea-11
+
 WORKDIR /demo
 COPY --from=build /demo/target/auth-0.0.1-SNAPSHOT.jar /demo/demo.jar
 EXPOSE 8080
