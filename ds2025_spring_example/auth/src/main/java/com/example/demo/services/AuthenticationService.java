@@ -109,12 +109,7 @@ public class AuthenticationService {
         return generateToken(loginDTO.getUsername());
     }
 
-
-    public void deleteAll(){
-        this.authenticationRepository.deleteAll();
-    }
-//    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
-//    String result = encoder.encode("myPassword");
-//    assertTrue(encoder.matches("myPassword", result));
-
+//    public void deleteAll(){
+//        this.authenticationRepository.deleteAll();
+//    }
 }

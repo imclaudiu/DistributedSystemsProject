@@ -5,6 +5,7 @@ import com.example.demo.dtos.AuthenticationDetailsDTO;
 import com.example.demo.dtos.LoginDTO;
 import com.example.demo.entities.Authentication;
 import com.example.demo.services.AuthenticationService;
+import com.example.demo.services.KafkaProducerService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,9 +26,11 @@ import java.util.UUID;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+    private final KafkaProducerService kafkaProducerService;
 
-    public AuthenticationController(AuthenticationService authenticationService){
+    public AuthenticationController(AuthenticationService authenticationService, KafkaProducerService kafkaProducerService){
         this.authenticationService = authenticationService;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     @PostMapping("/add")
@@ -80,11 +83,12 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginDTO loginDTO) {
         String token = authenticationService.login(loginDTO);
+        kafkaProducerService.sendMessage(token);
         return ResponseEntity.ok(Map.of("token", token));
     }
 
-    @DeleteMapping("deleteAll")
-    public void deleteAll(){
-        authenticationService.deleteAll();
-    }
+//    @DeleteMapping("deleteAll")
+//    public void deleteAll(){
+//        authenticationService.deleteAll();
+//    }
 }
