@@ -12,9 +12,9 @@
 	</parent>
 
 	<groupId>com.example</groupId>
-	<artifactId>device</artifactId>
+	<artifactId>monitoring</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>device</name>
+	<name>monitoring</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
@@ -41,7 +41,12 @@
 			<scope>runtime</scope>
 		</dependency>
 
-			<!-- ... other dependency elements ... -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -50,12 +55,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>

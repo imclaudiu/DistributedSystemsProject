@@ -4,6 +4,7 @@ import com.example.demo.dtos.DeviceDTO;
 import com.example.demo.dtos.DeviceDetailsDTO;
 import com.example.demo.entities.Device;
 import com.example.demo.services.DeviceService;
+import com.example.demo.services.KafkaProducerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +24,11 @@ import java.util.UUID;
 public class DeviceController {
 
     private final DeviceService deviceService;
+    private final KafkaProducerService kafkaProducerService;
 
-    public DeviceController(DeviceService deviceService) {
+    public DeviceController(DeviceService deviceService, KafkaProducerService kafkaProducerService) {
         this.deviceService = deviceService;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     @PostMapping("/add")
@@ -33,6 +36,7 @@ public class DeviceController {
     {
         Device device = deviceService.insert(deviceDetailsDTO);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("{/id}").buildAndExpand(device.getId()).toUri();
+        kafkaProducerService.sendMessage(device.getId().toString());
         return ResponseEntity.created(location).build();
     }
 
