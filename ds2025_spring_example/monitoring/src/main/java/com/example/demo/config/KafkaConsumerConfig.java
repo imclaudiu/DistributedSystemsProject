@@ -1,5 +1,7 @@
 package com.example.demo.config;
 
+import com.example.demo.entities.DataReceive;
+import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
