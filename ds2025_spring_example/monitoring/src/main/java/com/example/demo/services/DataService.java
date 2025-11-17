@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,6 +25,24 @@ public class DataService {
     public void insert(UUID uuid){
         Data data = new Data(uuid, LocalTime.now(), 0);
         this.dataRepository.save(data);
+    }
+
+    public Data update(UUID id, LocalTime newTime, Integer newMeasurementValue){
+        Optional<Data> optionalData = dataRepository.findById(id);
+        if (optionalData.isEmpty()) {
+            LOGGER.warn("Data with id {} not found", id);
+            return null;
+        }
+
+        Data data = optionalData.get();
+        if (newTime != null) {
+            data.setTime(newTime);
+        }
+        if (newMeasurementValue != null) {
+            data.setHourlyValue(newMeasurementValue);
+        }
+
+        return dataRepository.save(data);
     }
 
     public List<Data> getAll(){
