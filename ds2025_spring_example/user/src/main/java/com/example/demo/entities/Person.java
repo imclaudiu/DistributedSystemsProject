@@ -21,13 +21,13 @@ public class Person  implements Serializable{
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = true)
     private String name;
 
-    @Column(name = "address", nullable = false)
+    @Column(name = "address", nullable = true)
     private String address;
 
-    @Column(name = "age", nullable = false)
+    @Column(name = "age", nullable = true)
     private Integer age;
 
 

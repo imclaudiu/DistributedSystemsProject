@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.entities.DataReceive;
 import com.example.demo.handlers.HandleJsonString;
+import com.example.demo.repositories.DataRepository;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +17,15 @@ public class KafkaConsumerService {
     private final TokenService tokenService;
     private final DataService dataService;
     private final HandleJsonString handleJsonString;
+    private final DataRepository dataRepository;
 
     private final List<DataReceive> receivedData = new ArrayList<>();
 
-    public KafkaConsumerService(TokenService tokenService, DataService dataService, HandleJsonString handleJsonString) {
+    public KafkaConsumerService(TokenService tokenService, DataService dataService, HandleJsonString handleJsonString, DataRepository dataRepository) {
         this.tokenService = tokenService;
         this.dataService = dataService;
         this.handleJsonString = handleJsonString;
+        this.dataRepository = dataRepository;
     }
 
     @KafkaListener(topics = "sim_data", groupId = "project-group")
@@ -34,11 +37,9 @@ public class KafkaConsumerService {
                 System.out.println("Message received: " + data);
                 receivedData.add(data);
 
-                // calcul consumuri pe intervale de 10 minute la fiecare minut
-                calculateConsumptionPerMinute();
+                // calcul consumuri pe ore întregi
+                calculateHourlyConsumption();
 
-                // Optionally, insert into your service
-                // dataService.insert(data);
             } else {
                 System.out.println("Received invalid JSON: " + message);
             }
@@ -49,25 +50,37 @@ public class KafkaConsumerService {
         }
     }
 
-    private void calculateConsumptionPerMinute() {
+    private void calculateHourlyConsumption() {
         if (receivedData.isEmpty()) return;
 
+        // intervalul curent definit pe ore întregi
         LocalTime currentTime = LocalTime.now();
-        LocalTime startTime = currentTime.minusMinutes(1); // interval de 10 minute înainte de momentul curent
-        int consumption = 0;
-        UUID id = null;
+        int currentHour = currentTime.getHour();
+        LocalTime intervalStart = LocalTime.of(currentHour, 0);
+        LocalTime intervalEnd = LocalTime.of(currentHour, 59, 59);
 
-        // sumăm toate valorile din ultimele 10 minute
+        int totalConsumption = 0;
+        UUID deviceId = null;
+
         for (DataReceive d : receivedData) {
-            if (!d.getTime().isBefore(startTime) && !d.getTime().isAfter(currentTime)) {
-                consumption += d.getMeasurementValue();
-                id = d.getDeviceId();
+            LocalTime t = d.getTime();
+            if (!t.isBefore(intervalStart) && !t.isAfter(intervalEnd)) {
+                totalConsumption += d.getMeasurementValue();
+                deviceId = d.getDeviceId(); // presupunem că luăm consum per device
             }
         }
 
-        dataService.update(id, currentTime, consumption);
-        System.out.println("=== Consum ultimul minut (până la " + currentTime + ") ===");
-        System.out.println("Total: " + consumption);
+
+        if (deviceId != null) {
+            if(!dataRepository.findByDeviceIdAndTime(deviceId, intervalStart).isPresent()){
+                dataService.insertWithValues(deviceId, intervalStart, 0);
+            }
+            // salvăm în DB consumul pentru interval
+            dataService.update(deviceId, intervalStart, totalConsumption);
+        }
+
+        System.out.println("=== Consum interval " + intervalStart + " - " + intervalEnd + " ===");
+        System.out.println("Total: " + totalConsumption);
         System.out.println("----------------------------------------");
     }
 }

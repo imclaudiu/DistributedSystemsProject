@@ -1,11 +1,14 @@
 package com.example.demo.services;
 
 import com.example.demo.entities.Data;
+import com.example.demo.entities.DataId;
 import com.example.demo.repositories.DataRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -27,17 +30,23 @@ public class DataService {
         this.dataRepository.save(data);
     }
 
-    public Data update(UUID id, LocalTime newTime, Integer newMeasurementValue){
-        Optional<Data> optionalData = dataRepository.findById(id);
+    public void insertWithValues(UUID uuid, LocalTime localTime, Integer hourlyValue){
+        if(this.dataRepository.findByDeviceIdAndTime(uuid, localTime).isPresent())
+        {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Already exists!");
+        }
+        Data data = new Data(uuid, localTime, hourlyValue);
+        this.dataRepository.save(data);
+    }
+
+    public Data update(UUID id, LocalTime time, Integer newMeasurementValue){
+        Optional<Data> optionalData = dataRepository.findById(new DataId(id, time));
         if (optionalData.isEmpty()) {
             LOGGER.warn("Data with id {} not found", id);
             return null;
         }
 
         Data data = optionalData.get();
-        if (newTime != null) {
-            data.setTime(newTime);
-        }
         if (newMeasurementValue != null) {
             data.setHourlyValue(newMeasurementValue);
         }

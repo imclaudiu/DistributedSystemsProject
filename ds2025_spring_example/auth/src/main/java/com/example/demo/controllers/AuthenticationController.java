@@ -46,6 +46,7 @@ public class AuthenticationController {
         Map<String, String> response = new HashMap<>();
         response.put("id", authentication.getId().toString());
         response.put("message", "User created successfully");
+        kafkaProducerService.sendMessage(authentication.getId().toString());
 
         return ResponseEntity.created(location)
                 .body(response);
@@ -83,12 +84,11 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginDTO loginDTO) {
         String token = authenticationService.login(loginDTO);
-        kafkaProducerService.sendMessage(token);
         return ResponseEntity.ok(Map.of("token", token));
     }
 
-//    @DeleteMapping("deleteAll")
-//    public void deleteAll(){
-//        authenticationService.deleteAll();
-//    }
+    @DeleteMapping("deleteAll")
+    public void deleteAll(){
+        authenticationService.deleteAll();
+    }
 }

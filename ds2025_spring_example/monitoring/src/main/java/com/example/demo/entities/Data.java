@@ -4,6 +4,7 @@ package com.example.demo.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -12,6 +13,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
+@IdClass(DataId.class)
 public class Data implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -20,7 +22,8 @@ public class Data implements Serializable {
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID deviceId;
 
-    @Column(name = "time", nullable = false)
+    @Id
+//    @Column(name = "time", nullable = false)
     private LocalTime time;
 
     @Column(name = "measurementValue", nullable = false)

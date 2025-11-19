@@ -23,7 +23,7 @@ public class KafkaProducerService {
         this.jsonKafkaTemplate = jsonKafkaTemplate;
     }
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 60000)
     public void sendMessage() {
         Data data = new Data(UUID.fromString("0c1f7843-678d-4a5c-bc76-cb66ccd09152"), LocalTime.now(), ThreadLocalRandom.current().nextInt(0,20));
 //        Object object = data;

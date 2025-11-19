@@ -37,6 +37,9 @@ public class AuthenticationService {
     }
 
     public Authentication insertAuth(AuthenticationDetailsDTO authenticationDetailsDTO){
+        if(authenticationRepository.findByUsername(authenticationDetailsDTO.getUsername()).isPresent()){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already in use!");
+        }
         Authentication authentication = AuthenticationBuilder.toEntity(authenticationDetailsDTO);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
         String encryptedPass = encoder.encode(authentication.getPassword());
@@ -109,7 +112,7 @@ public class AuthenticationService {
         return generateToken(loginDTO.getUsername());
     }
 
-//    public void deleteAll(){
-//        this.authenticationRepository.deleteAll();
-//    }
+    public void deleteAll(){
+        this.authenticationRepository.deleteAll();
+    }
 }

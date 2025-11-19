@@ -8,7 +8,7 @@ import java.util.UUID;
 @Service
 public class KafkaProducerService {
 
-    private static final String TOPIC = "my_topic";
+    private static final String TOPIC = "register-topic1";
     private final KafkaTemplate<String, String> kafkaTemplate;
 
     AuthenticationService authenticationService;

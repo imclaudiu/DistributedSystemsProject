@@ -12,9 +12,9 @@ public class KafkaConsumerService {
         this.tokenService = tokenService;
     }
 
-    @KafkaListener(topics = "my_topic", groupId = "group_id")
+    @KafkaListener(topics = "register-topic1", groupId = "group_id")
     public void consume(String message) {
 
-        System.out.println("Message received: " + tokenService.extractUserId(message));
+        System.out.println("Message received: " + message);
     }
 }
