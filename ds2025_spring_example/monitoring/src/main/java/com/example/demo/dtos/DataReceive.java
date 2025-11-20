@@ -1,4 +1,4 @@
-package com.example.demo.entities;
+package com.example.demo.dtos;
 
 
 import java.time.LocalTime;

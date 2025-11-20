@@ -2,6 +2,8 @@ package com.example.demo.controllers;
 
 import com.example.demo.dtos.DeviceDTO;
 import com.example.demo.dtos.DeviceDetailsDTO;
+import com.example.demo.dtos.DeviceMonitor;
+import com.example.demo.dtos.builders.DeviceBuilder;
 import com.example.demo.entities.Device;
 import com.example.demo.services.DeviceService;
 import com.example.demo.services.KafkaProducerService;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tools.jackson.databind.ObjectMapper;
 
 import java.net.URI;
 import java.util.List;
@@ -25,6 +28,8 @@ public class DeviceController {
 
     private final DeviceService deviceService;
     private final KafkaProducerService kafkaProducerService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public DeviceController(DeviceService deviceService, KafkaProducerService kafkaProducerService) {
         this.deviceService = deviceService;
@@ -36,7 +41,8 @@ public class DeviceController {
     {
         Device device = deviceService.insert(deviceDetailsDTO);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("{/id}").buildAndExpand(device.getId()).toUri();
-        kafkaProducerService.sendMessage(device.getId().toString());
+        DeviceMonitor deviceMonitor = DeviceBuilder.toDeviceMonitor(device);
+        kafkaProducerService.sendMessage(objectMapper.writeValueAsString(deviceMonitor));
         return ResponseEntity.created(location).build();
     }
 

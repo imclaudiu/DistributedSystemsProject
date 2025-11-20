@@ -3,6 +3,7 @@ package com.example.simulator.entities;
 import java.time.LocalTime;
 import java.util.UUID;
 
+
 public class Data {
 
     private UUID deviceId;

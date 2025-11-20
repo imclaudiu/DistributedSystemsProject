@@ -1,37 +1,44 @@
-package com.example.demo.services;
+package com.example.demo.kafka;
 
-import com.example.demo.entities.DataReceive;
+import com.example.demo.dtos.DataReceive;
 import com.example.demo.handlers.HandleJsonString;
 import com.example.demo.repositories.DataRepository;
+import com.example.demo.repositories.DeviceRepository;
+import com.example.demo.services.DataService;
+import com.example.demo.services.TokenService;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@Service
-public class KafkaConsumerService {
+@Component
+public class SimulatorListener {
 
     private final TokenService tokenService;
     private final DataService dataService;
     private final HandleJsonString handleJsonString;
     private final DataRepository dataRepository;
+    private final DeviceRepository deviceRepository;
 
     private final List<DataReceive> receivedData = new ArrayList<>();
 
-    public KafkaConsumerService(TokenService tokenService, DataService dataService, HandleJsonString handleJsonString, DataRepository dataRepository) {
+    public SimulatorListener(TokenService tokenService, DataService dataService, HandleJsonString handleJsonString, DataRepository dataRepository, DeviceRepository deviceRepository) {
         this.tokenService = tokenService;
         this.dataService = dataService;
         this.handleJsonString = handleJsonString;
         this.dataRepository = dataRepository;
+        this.deviceRepository = deviceRepository;
     }
 
     @KafkaListener(topics = "sim_data", groupId = "project-group")
-    public void createData(String message) {
+    public void SimData(String message) {
         try {
-            DataReceive data = handleJsonString.toJsonString(message);
+            DataReceive data = handleJsonString.toDataReceive(message);
 
             if (data != null) {
                 System.out.println("Message received: " + data);
@@ -72,6 +79,10 @@ public class KafkaConsumerService {
 
 
         if (deviceId != null) {
+            if(deviceRepository.findById(deviceId).isEmpty()){
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Device not found!");
+            }
+
             if(!dataRepository.findByDeviceIdAndTime(deviceId, intervalStart).isPresent()){
                 dataService.insertWithValues(deviceId, intervalStart, 0);
             }

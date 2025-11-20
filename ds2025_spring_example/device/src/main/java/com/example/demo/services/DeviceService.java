@@ -38,7 +38,6 @@ public class DeviceService {
 
     public Device insert(DeviceDetailsDTO deviceDetailsDTO){
         Device device = DeviceBuilder.toEntity(deviceDetailsDTO);
-        deviceRepository.save(device);
         return deviceRepository.save(device);
     }
 

@@ -2,6 +2,7 @@ package com.example.demo.dtos.builders;
 
 import com.example.demo.dtos.DeviceDTO;
 import com.example.demo.dtos.DeviceDetailsDTO;
+import com.example.demo.dtos.DeviceMonitor;
 import com.example.demo.entities.Device;
 
 public class DeviceBuilder {
@@ -12,6 +13,10 @@ public class DeviceBuilder {
 
     public static DeviceDTO toDeviceDTO(Device device){
         return new DeviceDTO(device.getId(), device.getName(), device.getOwnerID());
+    }
+
+    public static DeviceMonitor toDeviceMonitor(Device device){
+        return new DeviceMonitor(device.getId(), device.getMaxConsumption());
     }
 
     public static Device toEntity(DeviceDetailsDTO deviceDetailsDTO){
