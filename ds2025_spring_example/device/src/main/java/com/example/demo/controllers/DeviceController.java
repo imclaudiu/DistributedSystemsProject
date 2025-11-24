@@ -6,11 +6,10 @@ import com.example.demo.dtos.DeviceMonitor;
 import com.example.demo.dtos.builders.DeviceBuilder;
 import com.example.demo.entities.Device;
 import com.example.demo.services.DeviceService;
-import com.example.demo.services.KafkaProducerService;
+import com.example.demo.kafka.MonitorProducer;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -27,13 +26,9 @@ import java.util.UUID;
 public class DeviceController {
 
     private final DeviceService deviceService;
-    private final KafkaProducerService kafkaProducerService;
-    @Autowired
-    private ObjectMapper objectMapper;
 
-    public DeviceController(DeviceService deviceService, KafkaProducerService kafkaProducerService) {
+    public DeviceController(DeviceService deviceService) {
         this.deviceService = deviceService;
-        this.kafkaProducerService = kafkaProducerService;
     }
 
     @PostMapping("/add")
@@ -41,8 +36,6 @@ public class DeviceController {
     {
         Device device = deviceService.insert(deviceDetailsDTO);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("{/id}").buildAndExpand(device.getId()).toUri();
-        DeviceMonitor deviceMonitor = DeviceBuilder.toDeviceMonitor(device);
-        kafkaProducerService.sendMessage(objectMapper.writeValueAsString(deviceMonitor));
         return ResponseEntity.created(location).build();
     }
 
@@ -64,6 +57,7 @@ public class DeviceController {
     @DeleteMapping("/delete/{id}")
     public void deleteDevice(@PathVariable UUID id)
     {
+
         deviceService.deleteDevice(id);
     }
 

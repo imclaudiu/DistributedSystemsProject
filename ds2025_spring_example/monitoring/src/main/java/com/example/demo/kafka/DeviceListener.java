@@ -3,9 +3,12 @@ package com.example.demo.kafka;
 import com.example.demo.entities.Device;
 import com.example.demo.handlers.HandleJsonString;
 import com.example.demo.services.DeviceService;
+import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class DeviceListener {
@@ -29,6 +32,17 @@ public class DeviceListener {
             System.out.println("Failed " + message);
             e.printStackTrace();
         }
+    }
+
+    @KafkaListener(topics = "delete-device", groupId = "project-group1")
+    public void deleteDevice(String message){
+        try{
+            String clean = message.replace("\"", "");
+            UUID uuid = UUID.fromString(clean);
+            deviceService.delete(uuid);
+        } catch(IllegalArgumentException e){
+        throw new RuntimeException("Invalid UUID received: " + message, e);
+    }
     }
 
 }

@@ -3,6 +3,7 @@ package com.example.demo.services;
 import com.example.demo.entities.Data;
 import com.example.demo.entities.DataId;
 import com.example.demo.repositories.DataRepository;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,15 @@ public class DataService {
         }
 
         return dataRepository.save(data);
+    }
+
+    @Transactional
+    public void deleteDevicesByDeviceId(UUID id){
+        try{
+            dataRepository.deleteAllByDeviceId(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Couldn't delete device(s):", e);
+        }
     }
 
     public List<Data> getAll(){

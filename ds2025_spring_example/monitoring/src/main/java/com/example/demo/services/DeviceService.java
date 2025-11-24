@@ -24,6 +24,10 @@ public class DeviceService {
         return HttpStatus.OK;
     }
 
+    public Device findById(UUID uuid){
+        return this.deviceRepository.findById(uuid).orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
     public HttpStatus delete(UUID id){
         if(deviceRepository.findById(id).isPresent()) {
             this.deviceRepository.deleteById(id);

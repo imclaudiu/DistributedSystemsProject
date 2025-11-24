@@ -35,8 +35,8 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-//        String jwksUri = "http://auth:8080/.well-known/jwks.json";
-        String jwksUri = "http://localhost:8080/.well-known/jwks.json";
+        String jwksUri = "http://auth:8080/.well-known/jwks.json";
+//        String jwksUri = "http://localhost:8080/.well-known/jwks.json";
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withJwkSetUri(jwksUri).build();
 
         // Create an issuer validator

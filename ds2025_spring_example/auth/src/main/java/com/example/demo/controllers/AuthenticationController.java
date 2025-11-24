@@ -1,11 +1,9 @@
 package com.example.demo.controllers;
 
-import com.example.demo.dtos.AuthenticationDTO;
-import com.example.demo.dtos.AuthenticationDetailsDTO;
-import com.example.demo.dtos.LoginDTO;
+import com.example.demo.dtos.*;
 import com.example.demo.entities.Authentication;
 import com.example.demo.services.AuthenticationService;
-import com.example.demo.services.KafkaProducerService;
+import com.example.demo.kafka.KafkaProducerService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -34,9 +32,10 @@ public class AuthenticationController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, String>> insertAuth(@Valid @RequestBody AuthenticationDetailsDTO authenticationDetailsDTO) {
-        Authentication authentication = this.authenticationService.insertAuth(authenticationDetailsDTO);
+    public ResponseEntity<Map<String, String>> insertAuth(@Valid @RequestBody RegisterRequest req) {
 
+        AuthenticationDetailsDTO authenticationDetailsDTO = new AuthenticationDetailsDTO(req.getUsername(), req.getPassword(), req.getRole());
+        Authentication authentication = authenticationService.insertAuth(authenticationDetailsDTO);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -46,7 +45,10 @@ public class AuthenticationController {
         Map<String, String> response = new HashMap<>();
         response.put("id", authentication.getId().toString());
         response.put("message", "User created successfully");
-        kafkaProducerService.sendMessage(authentication.getId().toString());
+
+        PersonDTO personDTO = new PersonDTO(authentication.getId() ,req.getName(), req.getAddress(), req.getAge());
+
+        kafkaProducerService.sendMessage(personDTO);
 
         return ResponseEntity.created(location)
                 .body(response);

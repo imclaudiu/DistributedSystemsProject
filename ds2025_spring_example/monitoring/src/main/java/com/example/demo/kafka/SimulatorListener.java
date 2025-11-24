@@ -57,20 +57,29 @@ public class SimulatorListener {
         }
     }
 
+    @KafkaListener(topics = "delete-device", groupId = "project-group")
+    public void DeleteDeviceData(String message){
+            String clean = message.replace("\"", "");
+            UUID id = UUID.fromString(clean);
+            dataService.deleteDevicesByDeviceId(id);
+    }
+
     private void calculateHourlyConsumption() {
         if (receivedData.isEmpty()) return;
 
         // intervalul curent definit pe ore întregi
         LocalTime currentTime = LocalTime.now();
         int currentHour = currentTime.getHour();
-        LocalTime intervalStart = LocalTime.of(currentHour, 0);
-        LocalTime intervalEnd = LocalTime.of(currentHour, 59, 59);
+        LocalTime intervalStart = LocalTime.of(currentHour+2, 0);
+        LocalTime intervalEnd = LocalTime.of(currentHour+2, 59, 59);
 
         int totalConsumption = 0;
         UUID deviceId = null;
 
         for (DataReceive d : receivedData) {
             LocalTime t = d.getTime();
+//            totalConsumption += d.getMeasurementValue();
+//            deviceId = d.getDeviceId(); // presupunem că luăm consum per device
             if (!t.isBefore(intervalStart) && !t.isAfter(intervalEnd)) {
                 totalConsumption += d.getMeasurementValue();
                 deviceId = d.getDeviceId(); // presupunem că luăm consum per device

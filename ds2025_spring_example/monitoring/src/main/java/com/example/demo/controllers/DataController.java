@@ -38,4 +38,9 @@ public class DataController {
     public HttpStatus deleteDevice(@RequestParam UUID id){
         return this.deviceService.delete(id);
     }
+
+    @DeleteMapping("/deleteDevices/{id}")
+    public void deleteDevices(@PathVariable UUID id){
+        dataService.deleteDevicesByDeviceId(id);
+    }
 }

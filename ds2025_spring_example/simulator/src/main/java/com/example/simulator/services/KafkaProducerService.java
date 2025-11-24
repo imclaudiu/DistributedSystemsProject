@@ -25,7 +25,7 @@ public class KafkaProducerService {
 
     @Scheduled(fixedRate = 60000)
     public void sendMessage() {
-        Data data = new Data(UUID.fromString("5e747761-12cc-4345-a260-b685e0e1dc7a"), LocalTime.now(), ThreadLocalRandom.current().nextInt(0,20));
+        Data data = new Data(UUID.fromString("2a74bc1d-d7d1-4e7a-b416-d684c0a82850"), LocalTime.now(), ThreadLocalRandom.current().nextInt(0,20));
 //        Object object = data;
         jsonKafkaTemplate.send(TOPIC, data);
         System.out.println("Message sent: " + data);

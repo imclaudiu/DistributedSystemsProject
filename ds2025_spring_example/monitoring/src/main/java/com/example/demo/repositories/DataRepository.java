@@ -10,4 +10,6 @@ import java.util.UUID;
 
 public interface DataRepository extends JpaRepository<Data, DataId> {
     Optional<Data> findByDeviceIdAndTime(UUID deviceId, LocalTime localTime);
+    void deleteAllByDeviceId(UUID deviceId);
+//    void deleteByDeviceId(UUID deviceId);
 }

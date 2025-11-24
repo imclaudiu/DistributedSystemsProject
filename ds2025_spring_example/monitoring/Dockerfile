@@ -13,6 +13,6 @@ RUN mvn clean install -DskipTests
 
 FROM openjdk:25-ea-11
 WORKDIR /demo
-COPY --from=build /demo/target/device-0.0.1-SNAPSHOT.jar /demo/demo.jar
+COPY --from=build /demo/target/monitoring-0.0.1-SNAPSHOT.jar /demo/demo.jar
 EXPOSE 8080
 CMD ["java", "-jar", "demo.jar"]

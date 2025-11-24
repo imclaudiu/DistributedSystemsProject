@@ -1,36 +1,19 @@
-package com.example.demo.entities;
+package com.example.demo.dtos;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-import java.io.Serializable;
 import java.util.UUID;
 
-@Entity
-public class Person implements Serializable{
-
-    private static final long serialVersionUID = 1L;
-
-    @Id
-    @JdbcTypeCode(SqlTypes.UUID)
+public class PersonDTO {
     private UUID id;
-
-    @Column(name = "name", nullable = true)
     private String name;
-
-    @Column(name = "address", nullable = true)
     private String address;
-
-    @Column(name = "age", nullable = true)
     private Integer age;
 
+    public PersonDTO(){
 
-    public Person() {
     }
 
-    public Person(String name, String address, Integer age) {
+    public PersonDTO(UUID id, String name, String address, Integer age) {
+        this.id = id;
         this.name = name;
         this.address = address;
         this.age = age;
