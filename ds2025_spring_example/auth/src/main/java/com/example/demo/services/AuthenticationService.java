@@ -6,18 +6,15 @@ import com.example.demo.dtos.LoginDTO;
 import com.example.demo.dtos.builders.AuthenticationBuilder;
 import com.example.demo.entities.Authentication;
 import com.example.demo.handlers.exceptions.model.ResourceNotFoundException;
+import com.example.demo.kafka.KafkaProducerService;
 import com.example.demo.repositories.AuthenticationRepository;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
@@ -30,17 +27,23 @@ public class AuthenticationService {
 
     private final AuthenticationRepository authenticationRepository;
     private final JwtEncoder jwtEncoder;
+    private final KafkaProducerService kafkaProducerService;
 
-    public AuthenticationService(AuthenticationRepository authenticationRepository, JwtEncoder jwtEncoder){
+    public AuthenticationService(AuthenticationRepository authenticationRepository, JwtEncoder jwtEncoder, KafkaProducerService kafkaProducerService){
         this.authenticationRepository = authenticationRepository;
         this.jwtEncoder = jwtEncoder;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     public Authentication insertAuth(AuthenticationDetailsDTO authenticationDetailsDTO){
+        if(authenticationRepository.findByUsername(authenticationDetailsDTO.getUsername()).isPresent()){
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username already in use!");
+        }
         Authentication authentication = AuthenticationBuilder.toEntity(authenticationDetailsDTO);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
         String encryptedPass = encoder.encode(authentication.getPassword());
         authentication.setPassword(encryptedPass);
+
         return authenticationRepository.save(authentication);
     }
 
@@ -57,7 +60,6 @@ public class AuthenticationService {
 
     public Boolean checkPassword(LoginDTO loginDTO) {
           Authentication authentication = authenticationRepository.findByUsername(loginDTO.getUsername()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
-//        Authentication authentication = authenticationRepository.findById(loginDTO.getId()).orElseThrow(()-> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return BCrypt.checkpw(loginDTO.getPassword(), authentication.getPassword());
     }
 
@@ -81,6 +83,7 @@ public class AuthenticationService {
 
     public void delete(String username){
         Authentication authentication = authenticationRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("Authentication details not found."));
+        kafkaProducerService.deleteAuthMessage(authentication.getId());
         authenticationRepository.delete(authentication);
     }
 
@@ -109,12 +112,7 @@ public class AuthenticationService {
         return generateToken(loginDTO.getUsername());
     }
 
-
     public void deleteAll(){
         this.authenticationRepository.deleteAll();
     }
-//    BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
-//    String result = encoder.encode("myPassword");
-//    assertTrue(encoder.matches("myPassword", result));
-
 }

@@ -2,10 +2,13 @@ package com.example.demo.services;
 
 import com.example.demo.dtos.DeviceDTO;
 import com.example.demo.dtos.DeviceDetailsDTO;
+import com.example.demo.dtos.DeviceMonitor;
 import com.example.demo.dtos.builders.DeviceBuilder;
 import com.example.demo.entities.Device;
 import com.example.demo.handlers.exceptions.model.ResourceNotFoundException;
+import com.example.demo.kafka.MonitorProducer;
 import com.example.demo.repositories.DeviceRepository;
+import jakarta.transaction.Transactional;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +28,12 @@ import static org.hibernate.sql.results.LoadingLogger.LOGGER;
 public class DeviceService {
 
     private final DeviceRepository deviceRepository;
+    private final MonitorProducer monitorProducer;
 
-    public DeviceService(DeviceRepository deviceRepository) {
+
+    public DeviceService(DeviceRepository deviceRepository, MonitorProducer monitorProducer) {
         this.deviceRepository = deviceRepository;
+        this.monitorProducer = monitorProducer;
     }
 
     public DeviceDetailsDTO getDevice(UUID id){
@@ -38,8 +44,11 @@ public class DeviceService {
 
     public Device insert(DeviceDetailsDTO deviceDetailsDTO){
         Device device = DeviceBuilder.toEntity(deviceDetailsDTO);
-        deviceRepository.save(device);
-        return deviceRepository.save(device);
+        this.deviceRepository.save(device);
+        DeviceMonitor deviceMonitor = DeviceBuilder.toDeviceMonitor(device);
+//        monitorProducer.setAddDeviceTopic(objectMapper.writeValueAsString(deviceMonitor));
+        monitorProducer.setAddDeviceTopic(deviceMonitor);
+        return device;
     }
 
     public List<DeviceDTO> getAllDevices(){
@@ -49,6 +58,7 @@ public class DeviceService {
 
     public void deleteDevice(UUID id){
         Device device = deviceRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(Device.class.getSimpleName() + " with id " + id));
+        monitorProducer.setDeleteDeviceTopic(id);
         deviceRepository.deleteById(id);
     }
 
@@ -66,6 +76,9 @@ public class DeviceService {
 
     public List<DeviceDetailsDTO> findByOwnerId(UUID id){
         List<Device> devices = this.deviceRepository.findByOwnerID(id);
+        if(devices.isEmpty()){
+            throw new ResourceNotFoundException("No device found with that owner Id!");
+        }
         return devices.stream()
                 .map(DeviceBuilder::toDeviceDetailsDTO)
                 .collect(Collectors.toList());

@@ -1,12 +1,14 @@
 package com.example.demo.services;
 
 
-import com.example.demo.dtos.PersonDTO;
+import com.example.demo.config.KafkaProducerConfig;
 import com.example.demo.dtos.PersonDetailsDTO;
 import com.example.demo.dtos.builders.PersonBuilder;
 import com.example.demo.entities.Person;
 import com.example.demo.handlers.exceptions.model.ResourceNotFoundException;
+import com.example.demo.kafka.DeviceProducer;
 import com.example.demo.repositories.PersonRepository;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +25,12 @@ import java.util.stream.Collectors;
 public class PersonService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PersonService.class);
     private final PersonRepository personRepository;
+    private final DeviceProducer deviceProducer;
 
     @Autowired
-    public PersonService(PersonRepository personRepository) {
+    public PersonService(PersonRepository personRepository, DeviceProducer deviceProducer) {
         this.personRepository = personRepository;
+        this.deviceProducer = deviceProducer;
     }
 
     public List<PersonDetailsDTO> findPersons() {
@@ -47,16 +51,19 @@ public class PersonService {
 
     public UUID insert(Person personDTO) {
         personRepository.save(personDTO);
-        LOGGER.debug("Person with id {} was inserted in db", personDTO.getId());
+//        LOGGER.debug("Person with id {} was inserted in db", personDTO.getId());
+        deviceProducer.setAddUserTopic(personDTO.getId());
         return personDTO.getId();
     }
 
+    @Transactional
     public void delete(UUID id){
         Optional<Person> personOptional = personRepository.findById(id);
         if(!personOptional.isPresent()){
             LOGGER.error("Person with id " + id + " was not found in db");
             throw new ResourceNotFoundException(Person.class.getSimpleName() + " with id: " + id);
         }
+        deviceProducer.setDeleteUserTopic(id);
         personRepository.delete(personOptional.get());
     }
 

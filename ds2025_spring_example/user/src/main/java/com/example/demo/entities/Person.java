@@ -2,18 +2,14 @@ package com.example.demo.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
-
-
 import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
-public class Person  implements Serializable{
+public class Person implements Serializable{
 
     private static final long serialVersionUID = 1L;
 
@@ -21,13 +17,13 @@ public class Person  implements Serializable{
     @JdbcTypeCode(SqlTypes.UUID)
     private UUID id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = true)
     private String name;
 
-    @Column(name = "address", nullable = false)
+    @Column(name = "address", nullable = true)
     private String address;
 
-    @Column(name = "age", nullable = false)
+    @Column(name = "age", nullable = true)
     private Integer age;
 
 
