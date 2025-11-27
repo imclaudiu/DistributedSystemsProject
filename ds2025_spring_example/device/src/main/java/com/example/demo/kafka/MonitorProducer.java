@@ -26,7 +26,7 @@ public class MonitorProducer {
             String message = objectMapper.writeValueAsString(deviceMonitor);
             kafkaTemplate.send(addDeviceTopic, message);
         } catch (JacksonException e) {
-            throw new RuntimeException("Serialization failed", e);
+            throw new RuntimeException("Kafka device producer failure!", e);
         }
     }
 
@@ -36,7 +36,7 @@ public class MonitorProducer {
             kafkaTemplate.send(deleteDeviceTopic, message);
         }
         catch( JacksonException e){
-            throw new RuntimeException("Serialization failed", e);
+            throw new RuntimeException("Kafka device producer failure!", e);
         }
     }
 }

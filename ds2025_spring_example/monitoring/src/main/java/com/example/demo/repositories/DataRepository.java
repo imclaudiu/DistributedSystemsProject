@@ -1,7 +1,7 @@
 package com.example.demo.repositories;
 
 import com.example.demo.entities.Data;
-import com.example.demo.entities.DataId;
+import com.example.demo.dtos.DataId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalTime;

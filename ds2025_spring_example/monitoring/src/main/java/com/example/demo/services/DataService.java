@@ -1,7 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.entities.Data;
-import com.example.demo.entities.DataId;
+import com.example.demo.dtos.DataId;
 import com.example.demo.repositories.DataRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;

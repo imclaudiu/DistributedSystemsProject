@@ -8,6 +8,7 @@ import com.example.demo.entities.Device;
 import com.example.demo.handlers.exceptions.model.ResourceNotFoundException;
 import com.example.demo.kafka.MonitorProducer;
 import com.example.demo.repositories.DeviceRepository;
+import jakarta.transaction.Transactional;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -79,7 +79,7 @@ public class AuthenticationController {
     @DeleteMapping("/delete/{username}")
     public ResponseEntity<Void> deleteAuth(@PathVariable String username) {
         authenticationService.delete(username);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
 

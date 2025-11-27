@@ -6,6 +6,7 @@ import com.example.demo.dtos.LoginDTO;
 import com.example.demo.dtos.builders.AuthenticationBuilder;
 import com.example.demo.entities.Authentication;
 import com.example.demo.handlers.exceptions.model.ResourceNotFoundException;
+import com.example.demo.kafka.KafkaProducerService;
 import com.example.demo.repositories.AuthenticationRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -26,10 +27,12 @@ public class AuthenticationService {
 
     private final AuthenticationRepository authenticationRepository;
     private final JwtEncoder jwtEncoder;
+    private final KafkaProducerService kafkaProducerService;
 
-    public AuthenticationService(AuthenticationRepository authenticationRepository, JwtEncoder jwtEncoder){
+    public AuthenticationService(AuthenticationRepository authenticationRepository, JwtEncoder jwtEncoder, KafkaProducerService kafkaProducerService){
         this.authenticationRepository = authenticationRepository;
         this.jwtEncoder = jwtEncoder;
+        this.kafkaProducerService = kafkaProducerService;
     }
 
     public Authentication insertAuth(AuthenticationDetailsDTO authenticationDetailsDTO){
@@ -80,6 +83,7 @@ public class AuthenticationService {
 
     public void delete(String username){
         Authentication authentication = authenticationRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("Authentication details not found."));
+        kafkaProducerService.deleteAuthMessage(authentication.getId());
         authenticationRepository.delete(authentication);
     }
 
