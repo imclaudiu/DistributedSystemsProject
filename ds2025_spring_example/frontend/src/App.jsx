@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { DashboardProvider } from './contexts/DashboardContext';
+import { WebSocketProvider } from './contexts/WebSocketContext';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard.jsx';
 import './styles/App.css';
@@ -27,43 +28,45 @@ function PublicRoute({ children }) {
 function App() {
     return (
         <AuthProvider>
-            <DashboardProvider>
-                <SettingsProvider>
-                <Router>
-                    <div className="App">
-                        <Routes>
-                            <Route
-                                path="/login"
-                                element={
-                                    <PublicRoute>
-                                        <Login />
-                                    </PublicRoute>
-                                }
-                            />
-                            <Route path="/register" element={<Register />} />
-                            <Route 
-                                path="/settings" 
-                                element={
-                                    <ProtectedRoute>
-                                        <Settings />
-                                    </ProtectedRoute>
-                                } 
-                            />
-                            <Route
-                                path="/dashboard"
-                                element={
-                                    <ProtectedRoute>
-                                        <Dashboard />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route path="/" element={<Navigate to="/dashboard" />} />
-                            <Route path="*" element={<Navigate to="/dashboard" />} />
-                        </Routes>
-                    </div>
-                </Router>
-                </SettingsProvider> 
-            </DashboardProvider>
+            <WebSocketProvider>
+                <DashboardProvider>
+                    <SettingsProvider>
+                        <Router>
+                            <div className="App">
+                                <Routes>
+                                    <Route
+                                        path="/login"
+                                        element={
+                                            <PublicRoute>
+                                                <Login />
+                                            </PublicRoute>
+                                        }
+                                    />
+                                    <Route path="/register" element={<Register />} />
+                                    <Route 
+                                        path="/settings" 
+                                        element={
+                                            <ProtectedRoute>
+                                                <Settings />
+                                            </ProtectedRoute>
+                                        } 
+                                    />
+                                    <Route
+                                        path="/dashboard"
+                                        element={
+                                            <ProtectedRoute>
+                                                <Dashboard />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route path="/" element={<Navigate to="/dashboard" />} />
+                                    <Route path="*" element={<Navigate to="/dashboard" />} />
+                                </Routes>
+                            </div>
+                        </Router>
+                    </SettingsProvider> 
+                </DashboardProvider>
+            </WebSocketProvider>
         </AuthProvider>
     );
 }

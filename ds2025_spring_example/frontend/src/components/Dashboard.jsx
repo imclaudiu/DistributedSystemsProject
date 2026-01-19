@@ -169,6 +169,7 @@ const Dashboard = () => {
 
     return (
         <div className="dashboard-container">
+
             <header className="dashboard-header">
                 <h1>Dashboard</h1>
                 <div className="user-info">
