@@ -46,37 +46,16 @@ export function AuthProvider({ children }) {
             const authResponse = await authService.register({
                 username: registerData.username,
                 password: registerData.password,
-                role: 'user'
+                role: 'user',
+                name: registerData.name,
+                address: registerData.address,
+                age: registerData.age
             });
 
             console.log('Full auth response:', authResponse);
 
-            // 2. Extract UUID from response body (new backend format)
-            const uuid = authResponse.data?.id;
-            console.log('UUID from response body:', uuid);
-
-            if (!uuid) {
-                throw new Error('No user ID returned from auth service');
-            }
-
-            // 3. Create user in person service with the same UUID
-            try {
-                const userResponse = await userService.createPerson({
-                    id: uuid,
-                    name: registerData.name,
-                    address: registerData.address,
-                    age: registerData.age,
-                });
-                console.log('User created in person service:', userResponse);
-            } catch (userError) {
-                console.error('Failed to create user in person service:', userError);
-                // Don't fail registration - user can complete profile later
-                // You might want to implement rollback here if needed
-            }
-
             return {
                 success: true,
-                userId: uuid
             };
 
         } catch (error) {

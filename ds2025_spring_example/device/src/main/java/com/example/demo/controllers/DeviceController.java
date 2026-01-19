@@ -45,7 +45,7 @@ public class DeviceController {
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("{/id}").buildAndExpand(device.getId()).toUri();
         return ResponseEntity.created(location).build();
     }
-
+//se fute cu kafkaul, rezolva kafka si vezi daca primeste ID-ul
     @GetMapping("/getAll")
     public ResponseEntity<List<DeviceDTO>> getAllDevices(){
         return ResponseEntity.ok(deviceService.getAllDevices());

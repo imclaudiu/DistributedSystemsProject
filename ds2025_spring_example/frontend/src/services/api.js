@@ -5,6 +5,10 @@ const AUTH_BASE_URL = 'api/auth';
 const USER_BASE_URL = 'api/person';
 const DEVICE_BASE_URL = 'api/device';
 
+// const AUTH_BASE_URL = 'http://localhost:8080/auth';
+// const USER_BASE_URL = 'http://localhost:8081/person';
+// const DEVICE_BASE_URL = 'http://localhost:8082/device';
+
 // Create axios instances for different services
 const authApi = axios.create({
     baseURL: AUTH_BASE_URL,
