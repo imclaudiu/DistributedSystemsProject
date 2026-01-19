@@ -13,6 +13,7 @@ public class KafkaProducerService {
 
     private static final String TOPIC = "register-topic";
     private static final String DELETE_TOPIC = "delete-auth";
+    private static final String LOGIN_TOPIC = "login-auth";
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
 
@@ -31,6 +32,17 @@ public class KafkaProducerService {
             throw new RuntimeException(e);
         }
     }
+
+    public void sendLogin(String message) {
+        try {
+            kafkaTemplate.send(LOGIN_TOPIC, message);
+            System.out.println("sent: " + message);
+        } catch (JacksonException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 
     public void deleteAuthMessage(UUID id){
         try {

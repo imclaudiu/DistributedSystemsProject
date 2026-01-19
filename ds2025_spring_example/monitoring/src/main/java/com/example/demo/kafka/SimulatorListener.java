@@ -1,6 +1,7 @@
 package com.example.demo.kafka;
 
 import com.example.demo.dtos.DataReceive;
+import com.example.demo.entities.Device;
 import com.example.demo.handlers.HandleJsonString;
 import com.example.demo.repositories.DataRepository;
 import com.example.demo.repositories.DeviceRepository;
@@ -24,15 +25,17 @@ public class SimulatorListener {
     private final HandleJsonString handleJsonString;
     private final DataRepository dataRepository;
     private final DeviceRepository deviceRepository;
+    private final WebSocketProducer webSocketProducer;
 
     private final List<DataReceive> receivedData = new ArrayList<>();
 
-    public SimulatorListener(TokenService tokenService, DataService dataService, HandleJsonString handleJsonString, DataRepository dataRepository, DeviceRepository deviceRepository) {
+    public SimulatorListener(TokenService tokenService, DataService dataService, HandleJsonString handleJsonString, DataRepository dataRepository, DeviceRepository deviceRepository, WebSocketProducer webSocketProducer) {
         this.tokenService = tokenService;
         this.dataService = dataService;
         this.handleJsonString = handleJsonString;
         this.dataRepository = dataRepository;
         this.deviceRepository = deviceRepository;
+        this.webSocketProducer = webSocketProducer;
     }
 
     @KafkaListener(topics = "sim_data", groupId = "project-group")
@@ -70,8 +73,8 @@ public class SimulatorListener {
         // intervalul curent definit pe ore întregi
         LocalTime currentTime = LocalTime.now();
         int currentHour = currentTime.getHour();
-        LocalTime intervalStart = LocalTime.of(currentHour+2, 0);
-        LocalTime intervalEnd = LocalTime.of(currentHour+2, 59, 59);
+        LocalTime intervalStart = LocalTime.of(currentHour, 0);
+        LocalTime intervalEnd = LocalTime.of(currentHour, 59, 59);
 
         int totalConsumption = 0;
         UUID deviceId = null;
@@ -102,5 +105,9 @@ public class SimulatorListener {
         System.out.println("=== Consum interval " + intervalStart + " - " + intervalEnd + " ===");
         System.out.println("Total: " + totalConsumption);
         System.out.println("----------------------------------------");
+        Device device = deviceRepository.findById(deviceId).orElseThrow();
+        if(device.getMaxConsumption() < totalConsumption){
+            webSocketProducer.overLimit(totalConsumption);
+        }
     }
 }

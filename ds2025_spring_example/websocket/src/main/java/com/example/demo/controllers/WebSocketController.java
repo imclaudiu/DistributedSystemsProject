@@ -16,13 +16,13 @@ public class WebSocketController {
 
     @PostMapping("/send")
     public String sendMessage(@RequestBody String message) {
-        webSocketHandler.sendMessageToAll("Broadcast: " + message);
+        webSocketHandler.sendToAll("Broadcast: " + message);
         return "Mesaj trimis: " + message;
     }
 
     @GetMapping("/test")
     public String test() {
-        webSocketHandler.sendMessageToAll("Server: Mesaj de test!");
+        webSocketHandler.sendToAll("Server: Mesaj de test!");
         return "Test broadcast trimis";
     }
 }

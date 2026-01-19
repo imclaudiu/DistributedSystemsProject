@@ -86,6 +86,7 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginDTO loginDTO) {
         String token = authenticationService.login(loginDTO);
+        kafkaProducerService.sendLogin("lala");
         return ResponseEntity.ok(Map.of("token", token));
     }
 
