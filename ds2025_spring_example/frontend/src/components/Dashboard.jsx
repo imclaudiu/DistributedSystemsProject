@@ -173,6 +173,9 @@ const Dashboard = () => {
                 <h1>Dashboard</h1>
                 <div className="user-info">
                     <span>Welcome, {user?.sub || user?.username || 'User'}!</span>
+
+                    <NotificationPanel />
+
                     <button onClick={handleLogout} className="logout-button">
                         Logout
                     </button>
