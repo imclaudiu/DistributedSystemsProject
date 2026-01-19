@@ -567,3 +567,4 @@
 172.18.0.1 - - [18/Jan/2026:23:00:08 +0000] "GET /api/person/get/fbba2c55-d206-4517-9bcd-b48b5e6add28 HTTP/1.1" 200 89 "-" "-" 66 "user-router@file" "http://user:8080" 27ms
 172.18.0.1 - - [18/Jan/2026:23:00:12 +0000] "DELETE /api/auth/delete/lalala HTTP/1.1" 200 0 "-" "-" 67 "auth-router@file" "http://auth:8080" 18ms
 172.18.0.1 - - [18/Jan/2026:23:00:17 +0000] "POST /api/auth/login HTTP/1.1" 404 59 "-" "-" 68 "auth-router@file" "http://auth:8080" 11ms
+172.18.0.1 - - [19/Jan/2026:12:12:44 +0000] "POST /api/auth/login HTTP/1.1" 502 11 "-" "-" 1 "auth-router@file" "http://auth:8080" 93ms
